@@ -1,6 +1,6 @@
 # MotionStructuralConnectivity
 
-This repository contains all the code to reproduce the results and figures in 
+This repository contains all the code to reproduce the results and figures in Oldham et al., 2020. The efficacy of different preprocessing steps in reducing motion-related confounds in diffusion MRI connectomics.
 
 MAIN_ANALYSIS.m will perform all of the analyses done in the paper. 
 
