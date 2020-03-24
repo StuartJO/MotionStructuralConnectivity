@@ -116,10 +116,10 @@ ax.TickLength = [0 0];
 
 set(gca,'FontSize',12);
 
-Alabel = annotation('textbox',[0.0117, 0.8637, 0.0160, 0.0280],'String','A','EdgeColor','none','FontSize',32);
+Alabel = annotation('textbox',[0, 0.8637, 0.0160, 0.0280],'String','A','EdgeColor','none','FontSize',32);
 
-Blabel = annotation('textbox',[0.0117, 0.6177, 0.0160, 0.0280],'String','B','EdgeColor','none','FontSize',32);
+Blabel = annotation('textbox',[0, 0.6177, 0.0160, 0.0280],'String','B','EdgeColor','none','FontSize',32);
 
-Clabel = annotation('textbox',[0.0117, 0.3125, 0.0160, 0.0280],'String','C','EdgeColor','none','FontSize',32);
+Clabel = annotation('textbox',[0, 0.3125, 0.0160, 0.0280],'String','C','EdgeColor','none','FontSize',32);
 
 end

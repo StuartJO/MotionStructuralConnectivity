@@ -7,9 +7,9 @@ addpath(genpath(PATH))
 saveFigs = 1;
 
 % Load in the data
-load('.\analysed_data\Pipelines_EdgeProperties_thr_0.05_inc0Edges_0.mat')
-load('.\analysed_data\Pipelines_QCSC_thr_0.05_RMS_abs_inc0Edges_0.mat')
-load('.\analysed_data\Node_degree_strength_thr_0.05_inc0Edges_0.mat')
+load('./analysed_data/Pipelines_EdgeProperties_thr_0.05_inc0Edges_0.mat')
+load('./analysed_data/Pipelines_QCSC_thr_0.05_RMS_abs_inc0Edges_0.mat')
+load('./analysed_data/Node_degree_strength_thr_0.05_inc0Edges_0.mat')
 
 % Get the ordering of the data
 [ORDERED_INDS_220,ORDERED_MATRIX_220,LABELS_220] = FindPipelineCombinations([0 0 0 0 0 0 2],[7 1 6 2 4 3 5],1);
@@ -200,8 +200,9 @@ end
 
 % Figures S8 to S14
 
+load('MOTION_DATA.mat', 'MOTIONNAMES')
 for i = 2:length(MOTIONNAMES)
-    load(['.\analysed_data\Pipelines_QCSC_thr_0.05_',MOTIONNAMES{i},'_inc0Edges_0.mat'])
+    load(['./analysed_data/Pipelines_QCSC_thr_0.05_',MOTIONNAMES{i},'_inc0Edges_0.mat'])
     MakeSigQCSCBarChart(QCSC(ORDERED_INDS_220),QCSC_PVALS(ORDERED_INDS_220),ORDERED_MATRIX_220,LABELS_220)
     if saveFigs == 1
         print(['FigS',num2str(i+6),'.tif'],'-dtiff','-r300')
@@ -212,8 +213,8 @@ end
 
 % Figure S16
 
-load('.\analysed_data\Pipelines_EdgeProperties_thr_0_inc0Edges_1.mat')
-load('.\analysed_data\Pipelines_QCSC_thr_0_RMS_abs_inc0Edges_1.mat')
+load('./analysed_data/Pipelines_EdgeProperties_thr_0_inc0Edges_1.mat')
+load('./analysed_data/Pipelines_QCSC_thr_0_RMS_abs_inc0Edges_1.mat')
 
 QCSCvsEdgeConLenVar(QCSC(ORDERED_INDS_220),EdgeLength(ORDERED_INDS_220),EdgeConsistency(ORDERED_INDS_220),EdgeWeightVariability(ORDERED_INDS_220),[11 14 34 46 80])
 

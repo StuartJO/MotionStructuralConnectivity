@@ -5,8 +5,11 @@ function PlotMotionProperties
 
 subplotind = 1;
 
-load('MOTION_DATA.mat','motion_data')
+load('MOTION_DATA.mat','motion_data','MOTIONNAMES')
 figure('Position',[0 0 1280 720])
+
+MotionPlotNames = {'{\itABS}{\it_{all}}','{\itREL}{\it_{all}}','{\itABS}{\it_{b0}}'...
+    ,'{\itABS}{\it_{b3000}}','{\itREL}{\it_{b0}}','{\itREL}{\it_{b3000}}','{\itTSNR}'};
 
 for i = 1:7
 
@@ -16,9 +19,9 @@ for i = 1:7
         JitteredParallelScatter(DATA,1,1,0)
         xticks([])
         ylabel('mm')
-        xlabel({MOTIONNAMES{i},'w/ EDDY1'},'Interpreter','none')
+        xlabel({MotionPlotNames{i},'w/ EDDY1'})
         
-        MotionName{subplotind} = [MOTIONNAMES{i},'w/ EDDY1'];
+        MotionName{subplotind} = [MotionPlotNames{i},'w/ EDDY1'];
         meanMotion(subplotind) = mean(DATA{1});    
         stdMotion(subplotind) = std(DATA{1});
         
@@ -31,7 +34,7 @@ for i = 1:7
         JitteredParallelScatter(DATA,1,1,0)        
         xticks([])
         ylabel('mm')
-        xlabel({MOTIONNAMES{i},'w/ EDDY2'},'Interpreter','none')
+        xlabel({MotionPlotNames{i},'w/ EDDY2'})
 
         MotionName{subplotind} = [MOTIONNAMES{i},'w/ EDDY2'];
         meanMotion(subplotind) = mean(DATA{1});    
@@ -46,7 +49,7 @@ for i = 1:7
         subplot(3,3,subplotind)
         JitteredParallelScatter(DATA,1,1,0)
         xticks([])
-        xlabel(MOTIONNAMES{i},'Interpreter','none')
+        xlabel(MotionPlotNames{i})
 
         
         if i == 7
