@@ -1,4 +1,4 @@
-function [ord,R,keepers] = BF_ClusterReorder(dataMatrix,distanceMetric,linkageMethod)
+function [ord,R,keepers,links] = BF_ClusterReorder(dataMatrix,distanceMetric,linkageMethod)
 % BF_ClusterReorder     A clustered reordering of the rows of an input data matrix.
 %
 % Computes a reordering of the rows of an input data matrix (under a given
