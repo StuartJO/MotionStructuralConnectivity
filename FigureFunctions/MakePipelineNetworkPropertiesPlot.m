@@ -63,7 +63,7 @@ set(gca,'FontSize',16);
 den_vals = density_mean(ORDERED_INDS);
 
 if max(den_vals) > 1 
-    den_vals = den_vals ./length(triu2vec(EdgeMatWeight{1},1));
+    den_vals = den_vals ./length(triu2vec(EdgeMatWeight{ORDERED_INDS(i)},1));
 end
 
 
