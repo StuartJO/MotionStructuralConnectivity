@@ -7,9 +7,9 @@ addpath(genpath(PATH))
 saveFigs = 1;
 
 % Load in the data
-load('./analysed_data/Pipelines_EdgeProperties_thr_0.05_inc0Edges_0.mat')
-load('./analysed_data/Pipelines_QCSC_thr_0.05_RMS_abs_inc0Edges_0.mat')
-load('./analysed_data/Node_degree_strength_thr_0.05_inc0Edges_0.mat')
+load('Pipelines_EdgeProperties_thr_0.05_inc0Edges_0.mat')
+load('Pipelines_QCSC_thr_0.05_ABSall_inc0Edges_0.mat')
+load('Node_degree_strength_thr_0.05_inc0Edges_0.mat')
 
 % Get the ordering of the data
 [ORDERED_INDS_220,ORDERED_MATRIX_220,LABELS_220] = FindPipelineCombinations([0 0 0 0 0 0 2],[7 1 6 2 4 3 5],1);
@@ -20,7 +20,8 @@ load('./analysed_data/Node_degree_strength_thr_0.05_inc0Edges_0.mat')
 MakePipelineNetworkPropertiesPlot(2)
 
 if saveFigs == 1
-    print('Fig1.tif','-dtiff','-r300')
+    print('Fig2.tif','-dtiff','-r300')
+    print('smallFig2.png','-dpng')
 end
 
 % Figure S2
@@ -43,6 +44,7 @@ MakeSigQCSCBarChart(QCSC(ORDERED_INDS_220),QCSC_PVALS(ORDERED_INDS_220),ORDERED_
 
 if saveFigs == 1
     print('Fig3.tif','-dtiff','-r300')
+    print('smallFig3.tif','-dtiff')
 end
 
 % Figure S4
@@ -67,6 +69,7 @@ QCSCvsEdgeConLenVar(QCSC(ORDERED_INDS_220),EdgeLength(ORDERED_INDS_220),EdgeCons
 
 if saveFigs == 1
     print('Fig4.tif','-dtiff','-r300')
+    print('smallFig4.tif','-dtiff')
 end
 
 % Figure S15
@@ -91,6 +94,7 @@ QCStrengthperThreshold(PropNodeStr_con_sig(ORDERED_INDS_220,:),PropNodeStr_var_s
 
 if saveFigs == 1
     print('Fig5.tif','-dtiff','-r300')
+    print('smallFig5.tif','-dtiff')
 end
 
 % Figure 6 subplots. These were subsequently combined in PowerPoint to make
@@ -134,6 +138,7 @@ end
 
 if saveFigs == 1
     print('Fig7.tif','-dtiff','-r300')
+    print('smallFig7.png','-dpng')
 end
 
 [CorrVec,CorrIND] = triu2vec(CTSR,1);
@@ -174,7 +179,7 @@ NodePropSig = mean(strdatasigcvals > 0,2);
 
 % Figure S17
 
-PlotBrainNodalProperty(NodePropSig,'','',[0 1],2,'Proportion significant',[0 1])
+PlotBrainNodalProperty(NodePropSig,'Proportion significant','',[0 1],2,1,[0 1])
 
 if saveFigs == 1
     print('FigS17.tif','-dtiff','-r300')
@@ -198,14 +203,14 @@ if saveFigs == 1
 end
 
 
-% Figures S8 to S14
+% Figures S9 to S14
 
 load('MOTION_DATA.mat', 'MOTIONNAMES')
 for i = 2:length(MOTIONNAMES)
-    load(['./analysed_data/Pipelines_QCSC_thr_0.05_',MOTIONNAMES{i},'_inc0Edges_0.mat'])
+    load(['Pipelines_QCSC_thr_0.05_',MOTIONNAMES{i},'_inc0Edges_0.mat'])
     MakeSigQCSCBarChart(QCSC(ORDERED_INDS_220),QCSC_PVALS(ORDERED_INDS_220),ORDERED_MATRIX_220,LABELS_220)
     if saveFigs == 1
-        print(['FigS',num2str(i+6),'.tif'],'-dtiff','-r300')
+        print(['FigS',num2str(i+7),'.tif'],'-dtiff','-r300')
     end
 
 end
@@ -214,7 +219,7 @@ end
 % Figure S16
 
 load('./analysed_data/Pipelines_EdgeProperties_thr_0_inc0Edges_1.mat')
-load('./analysed_data/Pipelines_QCSC_thr_0_RMS_abs_inc0Edges_1.mat')
+load('./analysed_data/Pipelines_QCSC_thr_0_ABSall_inc0Edges_1.mat')
 
 QCSCvsEdgeConLenVar(QCSC(ORDERED_INDS_220),EdgeLength(ORDERED_INDS_220),EdgeConsistency(ORDERED_INDS_220),EdgeWeightVariability(ORDERED_INDS_220),[11 14 34 46 80])
 
@@ -222,3 +227,9 @@ if saveFigs == 1
     print('FigS16.tif','-dtiff','-r300')
 end
 
+% Figure S8
+
+    MakeSigQCSCBarChart(QCSC(ORDERED_INDS_220),QCSC_PVALS(ORDERED_INDS_220),ORDERED_MATRIX_220,LABELS_220)
+    if saveFigs == 1
+        print('FigS8.tif','-dtiff','-r300')
+    end

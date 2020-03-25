@@ -6,8 +6,8 @@ function [DATA,STRDATA] = CalculateQCSC(motion,edgeconthr,calc_node_STRs,include
 % INPUTS:
 %
 % motion = a number from 1 to 7, or the name of the motion measure. Choose
-% from 'RMS_abs' (1),'RMS_rel' (2),'meanABSrms_b0' (3),'meanABSrms_b3000' 
-% (4),'meanRELrms_b0' (5),'meanRELrms_b3000' (6), 'tsnr_b3000' (7)
+% from 'ABSall' (1),'RELall' (2),'ABSb0' (3),'ABSb3000' 
+% (4),'RELb0' (5),'RELb3000' (6), 'TSNR' (7)
 %
 % edgeconthr = edge consistency-based threshold to use (see note below)
 %
@@ -52,19 +52,19 @@ if isstring(motion)
 
 switch motion
     
-    case 'RMS_abs'
+    case 'ABSall'
         m = 1;
-    case 'RMS_rel'
+    case 'RELall'
         m = 2;
-    case 'meanABSrms_b0'
+    case 'ABSb0'
         m = 3;
-    case 'meanABSrms_b3000'
+    case 'ABSb3000'
         m = 4;
-    case 'meanRELrms_b0'
+    case 'RELb0'
         m = 5;
-    case 'meanRELrms_b3000'
+    case 'RELb3000'
         m = 6;
-    case 'tsnr_b3000'
+    case 'TSNR'
         m = 7;
 end
 

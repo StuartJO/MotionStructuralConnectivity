@@ -30,7 +30,7 @@ figure('Position',[0 0 2560 1440]);
 
 subplot_tight = @(m,n,p) subtightplot(m,n,p,[0.005 0.05], [0.1 0.01], [0.1 0.01]); 
 
-subplot_tight(88,1,36:65)
+subplot_tight(88,1,39:65)
 extraParams.customSpot = '';
 extraParams.add0Line = true;
 
@@ -57,7 +57,7 @@ xticks([]);
 ylabel({'QC-SC correlation'})
 set(gca,'FontSize',16);
 
-subplot_tight(88,1,12:35)
+subplot_tight(88,1,12:38)
 
 PosBar = bar(0,'FaceColor',[243 106 103]./255,'EdgeColor','k');
 hold on
@@ -118,7 +118,7 @@ set(gca,'FontSize',12);
 
 Alabel = annotation('textbox',[0, 0.8637, 0.0160, 0.0280],'String','A','EdgeColor','none','FontSize',32);
 
-Blabel = annotation('textbox',[0, 0.6177, 0.0160, 0.0280],'String','B','EdgeColor','none','FontSize',32);
+Blabel = annotation('textbox',[0, 0.5881, 0.0160, 0.0280],'String','B','EdgeColor','none','FontSize',32);
 
 Clabel = annotation('textbox',[0, 0.3125, 0.0160, 0.0280],'String','C','EdgeColor','none','FontSize',32);
 

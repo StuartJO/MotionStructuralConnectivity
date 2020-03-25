@@ -47,7 +47,7 @@ for ROW = 1:2
     for COL = 1:5
 
 PlotLabelLetters = {'A','B','C','D','E';'F','G','H','I','J';'K','L','M','N','O';'P','Q','R','S','T'};
-PlotLabel = annotation('textbox',[0.095+(0.163*(COL-1))    0.99-(0.48*(ROW-1))    0.0164    0.0378],'String',PlotLabelLetters{ROW,COL},'EdgeColor','none','FontSize',32);
+PlotLabel = annotation('textbox',[0.095+(0.163*(COL-1))    0.97-(0.48*(ROW-1))    0.0164    0.0378],'String',PlotLabelLetters{ROW,COL},'EdgeColor','none','FontSize',32);
 
     end
 end
