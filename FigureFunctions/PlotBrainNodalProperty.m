@@ -101,8 +101,8 @@ rhsurface.faces = rh_faces;
 % the ROI
     
 if length(data) == 220
-    cdatal = changem(lh_cust200,[grey_val data(1:100)],0:100);
-    cdatar = changem(rh_cust200,[grey_val data(111:210)],0:100);
+    cdatal = changem(lh_rand200,[grey_val data(1:100)],0:100);
+    cdatar = changem(rh_rand200,[grey_val data(111:210)],0:100);
     
 elseif length(data) == 82
     cdatal = changem(lh_aparc,[grey_val data(1:34)],0:34);
