@@ -11,7 +11,7 @@ CalculateQCSC(1,.05,1,0,1,'./analysed_data');
 
 % This calculates the main data (QCSC with ABSall) with no threshold applied
 
-CalculateQCSC(1,0,0,1,1,'./analysed_data')
+CalculateQCSC(1,0,0,1,1,'./analysed_data');
 
 % This calculates QCSC with different motion measures
 
