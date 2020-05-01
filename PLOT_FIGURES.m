@@ -7,9 +7,9 @@ addpath(genpath(PATH))
 saveFigs = 1;
 
 %% Load in the data
-load('Pipelines_EdgeProperties_thr_0.05_inc0Edges_0.mat')
-load('Pipelines_QCSC_thr_0.05_ABSall_inc0Edges_0.mat')
-load('Node_degree_strength_thr_0.05_inc0Edges_0.mat')
+load('./analysed_data/Pipelines_EdgeProperties_thr_0.05_inc0Edges_0.mat')
+load(./analysed_data/'Pipelines_QCSC_thr_0.05_ABSall_inc0Edges_0.mat')
+load(./analysed_data/'Node_degree_strength_thr_0.05_inc0Edges_0.mat')
 
 %% Get the ordering of the data
 % Pull out only the pipelines that used a specific parcellation
@@ -249,7 +249,7 @@ end
 
 load('MOTION_DATA.mat', 'MOTIONNAMES')
 for i = 2:length(MOTIONNAMES)
-    load(['Pipelines_QCSC_thr_0.05_',MOTIONNAMES{i},'_inc0Edges_0.mat'])
+    load(['./analysed_data/Pipelines_QCSC_thr_0.05_',MOTIONNAMES{i},'_inc0Edges_0.mat'])
     MakeSigQCSCBarChart(QCSC(ORDERED_INDS_220),QCSC_PVALS(ORDERED_INDS_220),ORDERED_MATRIX_220,LABELS_220)
     if saveFigs == 1
         print(['FigS',num2str(i+7),'.tif'],'-dtiff','-r300')
