@@ -8,8 +8,8 @@ saveFigs = 1;
 
 %% Load in the data
 load('./analysed_data/Pipelines_EdgeProperties_thr_0.05_inc0Edges_0.mat')
-load(./analysed_data/'Pipelines_QCSC_thr_0.05_ABSall_inc0Edges_0.mat')
-load(./analysed_data/'Node_degree_strength_thr_0.05_inc0Edges_0.mat')
+load('./analysed_data/Pipelines_QCSC_thr_0.05_ABSall_inc0Edges_0.mat')
+load('./analysed_data/Node_degree_strength_thr_0.05_inc0Edges_0.mat')
 
 %% Get the ordering of the data
 % Pull out only the pipelines that used a specific parcellation
