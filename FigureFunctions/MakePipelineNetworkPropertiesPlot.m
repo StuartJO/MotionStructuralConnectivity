@@ -7,7 +7,7 @@ function MakePipelineNetworkPropertiesPlot(PARCELLATION)
 % PARCELLATION = set to 1, 2 or 3 for the 82 node, 220 node, or 380 node
 % parcellation respectively
 
-load('Pipelines_EdgeProperties_thr_0.05_inc0Edges_0.mat')
+load('./analysed_data/Pipelines_EdgeProperties_thr_0.05_inc0Edges_0.mat')
 
 [ORDERED_INDS,PROCESSING_MATRIX,PROCESSING_MATRIX_LABELS] = FindPipelineCombinations([0 0 0 0 0 0 PARCELLATION],[7 1 6 2 4 3 5],1);
 
