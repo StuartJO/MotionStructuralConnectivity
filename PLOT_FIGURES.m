@@ -1,4 +1,4 @@
-%% Figure generation script for
+%% Figure generation script
 
 % Note that all the figures are generated at a specifc size. I generated
 % these on a windows PC at 4K screen resolution with scaling set to 100% in
@@ -353,11 +353,17 @@ c.LineWidth = 2;
 print('StrColorBarVert.tif','-dtiff','-r300')
 
 
+% Calculate some statistics used in the paper
+
 load('MOTION_DATA.mat','motion_data','MOTIONNAMES')
 
+% Get the means and standard deviations of the various motion measures
+for i = 3:11 
+    motionM_SD(i-2,1) = mean(motion_data{i}); 
+    motionM_SD(i-2,2) = std(motion_data{i}); 
+end
 
-for i = 3:11; motionM_SD(i-2,1) = mean(motion_data{i}); motionM_SD(i-2,2) = std(motion_data{i}); end
-
+% Get the mean density of FACT and iFOD2 pipelines
 
 [FACT_PIPELINES,~,~] = FindPipelineCombinations([0 1 0 0 0 0 0],[7 1 6 2 4 3 5],1);
 
@@ -367,6 +373,7 @@ FACT_den_mean = mean(density_mean(FACT_PIPELINES));
 
 iFOD2_den_mean = mean(density_mean(iFOD2_PIPELINES));
 
+% Get the mean, max, and min QC-strength correlations for a 50% consistency threshold
 
 for i = 1:length(ORDERED_INDS_220)
     Cmean_STR220N(i) = nanmean(QCSTR_con{ORDERED_INDS_220(i),7});
