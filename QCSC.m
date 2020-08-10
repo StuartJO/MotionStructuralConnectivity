@@ -1,13 +1,15 @@
-function [DATA,STRDATA] = QCSC(adjs,lens,con,motion,edgeconthr,calc_node_STRs,include_zero_edges,save_edge_properties,save_output_location)
+function [DATA,STRDATA] = QCSC(adjs,motion,lens,edgeconthr,calc_node_STRs,include_zero_edges,save_edge_properties,save_output_location)
 
 % This function calculates the correlation between edge weight and some
 % measure of motion across participants.
 %
 % INPUTS:
 %
-% motion = a number from 1 to 7, or the name of the motion measure. Choose
-% from 'ABSall' (1),'RELall' (2),'ABSb0' (3),'ABSb3000' 
-% (4),'RELb0' (5),'RELb3000' (6), 'TSNR' (7)
+% adjs = a cell array where each cell contains a subjects weighted connectivity matrix
+%
+% motion = some measure of head motion
+%
+% lens = a cell array where each cell contains a subjects distance matrix (length of each connection)
 %
 % edgeconthr = edge consistency-based threshold to use (see note below)
 %
@@ -41,166 +43,109 @@ function [DATA,STRDATA] = QCSC(adjs,lens,con,motion,edgeconthr,calc_node_STRs,in
 % thresholding will have no effect on edge consistency based thresholding, 
 % but will effect edge variability based thresholding
 
-if nargin < 6
+if nargin < 8
     save_output_location = [];
 end
 
-load('MOTION_DATA.mat','motion_data','MOTIONNAMES','subjects')
-load('COMBINATIONS_MATRIX.mat')
-
-if isstring(motion)
-
-switch motion
-    
-    case 'ABSall'
-        m = 1;
-    case 'RELall'
-        m = 2;
-    case 'ABSb0'
-        m = 3;
-    case 'ABSb3000'
-        m = 4;
-    case 'RELb0'
-        m = 5;
-    case 'RELb3000'
-        m = 6;
-    case 'TSNR'
-        m = 7;
-end
-
-else
-    m = motion;
-end
-
-NPipes = size(COMBINATIONS,1);
-
-% Note that DATA1 and DATA2 are combined into DATA, they are just kept
+% Note that DATA and DATA are combined into DATA, they are just kept
 % seperate so they can be easily saved
 
-% A cell array where each cell contains a matrix of each edges QCSC correlation value
-DATA1.EdgeMatQCSC = cell(NPipes,1);
+% DATA.EdgeMatQCSC: a matrix of each edges QCSC correlation value
 
-% A cell array where each cell contains a matrix of each edges QCSC correlation p value
-DATA1.EdgeMatQCSC_PVALS = cell(NPipes,1);
+% DATA.EdgeMatQCSC_PVALS: a matrix of each edges QCSC correlation p value
 
-% A cell array where each cell contains a matrix of each edges consistency
-DATA2.EdgeMatConsistency = cell(NPipes,1);
+% DATA.EdgeMatConsistency: a matrix of each edges consistency
 
-% A cell array where each cell contains a matrix of each edges weight variability
-DATA2.EdgeMatWeightVariability = cell(NPipes,1);
+% DATA.EdgeMatWeightVariability: a matrix of each edges weight variability
 
-% A vector of the mean QCSC correlation for each pipeline
-DATA1.mean_QCSC = zeros(NPipes,1);
+% DATA.mean_QCSC: the mean QCSC correlation
 
-% A vector of the median QCSC correlation for each pipeline
-DATA1.median_QCSC = zeros(NPipes,1);
+% DATA.median_QCSC: the median QCSC correlation
 
-% A cell array where each cell contains a vector of each edges QCSC correlation value
-DATA1.QCSC = cell(NPipes,1);
+% DATA.QCSC: a vector of each edges QCSC correlation value
 
-% A cell array where each cell contains a vector of each edges QCSC correlation p value
-DATA1.QCSC_PVALS = cell(NPipes,1);
+% DATA.QCSC_PVALS: a vector of each edges QCSC correlation p value
 
-% A cell array where each cell contains a vector of each edges consistency
-DATA2.EdgeConsistency = cell(NPipes,1);
+% DATA.EdgeConsistency: a vector of each edges consistency
 
-% A cell array where each cell contains a vector of each edges weight variability
-DATA2.EdgeWeightVariability = cell(NPipes,1);
+% DATA.EdgeWeightVariability: a vector of each edges weight variability
 
-% A cell array where each cell contains a vector of each edges length
-DATA2.EdgeLength = cell(NPipes,1);
+% DATA.EdgeLength: a vector of each edges length
 
-% A cell array where each cell contains a matrix of each edges length
-DATA2.EdgeMatLength = cell(NPipes,1);
+% DATA.EdgeMatLength: a matrix of each edges length
 
-% A cell array where each cell contains a vector of each edges weight covariance
-DATA2.EdgeCovariance = cell(NPipes,1);
+% DATA.EdgeCovariance: a vector of each edges weight covariance
 
-% A cell array where each cell contains a vector of each edges weight variance
-DATA2.EdgeWeightVariance = cell(NPipes,1);
+% DATA.EdgeWeightVariance: a vector of each edges weight variance
 
-% A cell array where each cell contains a matrix of each edges weight covariance
-DATA2.EdgeMatCovariance = cell(NPipes,1);
+% DATA.EdgeMatCovariance: a matrix of each edges weight covariance
 
-% A cell array where each cell contains a matrix of each edges weight variance
-DATA2.EdgeMatWeightVariance = cell(NPipes,1);
+% DATA.EdgeMatWeightVariance: a matrix of each edges weight variance
 
-% A cell array where each cell contains a vector of each edges weight
-DATA2.EdgeWeight = cell(NPipes,1);
+% DATA.EdgeWeight: a vector of each edges weight
 
-% A cell array where each cell contains a matrix of each edges weight
-DATA2.EdgeMatWeight = cell(NPipes,1);
+% DATA.EdgeMatWeight: a matrix of each edges weight
 
-% A vector of the mean total strength (across participants) for each pipeline
-DATA2.total_str_mean = zeros(NPipes,1);
+% DATA.total_str_mean: the mean total strength (across participants)
 
-% A vector of the standard deviation of total strength (across participants) for each pipeline
-DATA2.total_str_sd = zeros(NPipes,1);
+% DATA.total_str_sd: standard deviation of total strength (across participants)
 
-% A vector of the mean density (across participants) for each pipeline
-DATA2.density_mean = zeros(NPipes,1);
+% DATA.density_mean: the mean density (across participants)
 
-% A vector of the standard deviation of density (across participants) for each pipeline
-DATA2.density_sd = zeros(NPipes,1);
+% DATA.density_sd: the standard deviation of density (across participants) 
 
-% A vector of the mean of mean edge weight (across participants) for each pipeline
-DATA2.MeanEdgeWeight_mean = zeros(NPipes,1);
+% DATA.MeanEdgeWeight_mean: the mean of mean edge weight (across participants)
 
-% A vector of the mean of standard deviation of edge weight (across participants) for each pipeline
-DATA2.MeanEdgeWeight_sd = zeros(NPipes,1);
+% DATA.MeanEdgeWeight_sd: the mean of standard deviation of edge weight (across participants)
 
-% A vector of the standard deviation of mean edge weight (across participants) for each pipeline
-DATA2.SdEdgeWeight_mean = zeros(NPipes,1);
+% DATA.SdEdgeWeight_mean: the standard deviation of mean edge weight (across participants)
 
-% A vector of the standard deviation of standard deviation of edge weight (across participants) for each pipeline
-DATA2.SdEdgeWeight_sd = zeros(NPipes,1);
+% DATA.SdEdgeWeight_sd: the standard deviation of standard deviation of edge weight (across participants)
 
 % Thresholds to check when calculating strength
 threshs = [0 .05 .1:.1:1];
 
 Nthr = length(threshs);
 
-% A cell matrix where each cell is the node strength for a pipeline (rows)
+% STRDATA.STRcon: the node strength 
 % under a given edge based consistency threshold (columns)
-STRDATA.STRcon = cell(NPipes,Nthr);
+STRDATA.STRcon = cell(1,Nthr);
 
-% A cell matrix where each cell is the node degree for a pipeline (rows)
+% A cell matrix where each cell is the node degree 
 % under a given edge based consistency threshold (columns)
-STRDATA.DEGcon = cell(NPipes,Nthr);
+STRDATA.DEGcon = cell(1,Nthr);
 
-% A cell matrix where each cell is the node strength for a pipeline (rows)
+% A cell matrix where each cell is the node strength 
 % under a given edge based variability threshold (columns)
-STRDATA.STRvar = cell(NPipes,Nthr);
+STRDATA.STRvar = cell(1,Nthr);
 
-% A cell matrix where each cell is the node degree for a pipeline (rows)
+% A cell matrix where each cell is the node degree 
 % under a given edge based variability threshold (columns)
-STRDATA.DEGvar = cell(NPipes,Nthr);
+STRDATA.DEGvar = cell(1,Nthr);
 
 % A cell matrix where each cell is the QCStrength correlation for each node 
-% for a pipeline (rows) under a given edge based consistency threshold (columns)
-STRDATA.QCSTR_con = cell(NPipes,Nthr);
+%  under a given edge based consistency threshold (columns)
+STRDATA.QCSTR_con = cell(1,Nthr);
 
 % A cell matrix where each cell is the QCStrength correlation p value for each node 
-% for a pipeline (rows) under a given edge based consistency threshold (columns)
-STRDATA.QCSTR_pval_con = cell(NPipes,Nthr);
+%  under a given edge based consistency threshold (columns)
+STRDATA.QCSTR_pval_con = cell(1,Nthr);
 
 % A cell matrix where each cell is the QCStrength correlation for each node 
-% for a pipeline (rows) under a given edge based variability threshold (columns)
-STRDATA.QCSTR_var = cell(NPipes,Nthr);
+%  under a given edge based variability threshold (columns)
+STRDATA.QCSTR_var = cell(1,Nthr);
 
 % A cell matrix where each cell is the QCStrength correlation p value for each node 
-% for a pipeline (rows) under a given edge based variability threshold (columns)
-STRDATA.QCSTR_pval_var = cell(NPipes,Nthr);
+% under a given edge based variability threshold (columns)
+STRDATA.QCSTR_pval_var = cell(1,Nthr);
 
 % A matrix of the propotion of nodes with a significant QCStrength
-% correlation for a pipeline (rows) under a given edge based consistency 
-% threshold (columns)
-STRDATA.PropNodeStr_con_sig = zeros(NPipes,Nthr);
+% correlation (p < .05) under a given edge based consistency threshold (columns)
+STRDATA.PropNodeStr_con_sig = zeros(1,Nthr);
 
 % A matrix of the propotion of nodes with a significant QCStrength
-% correlation for a pipeline (rows) under a given edge based variability 
-% threshold (columns)
-STRDATA.PropNodeStr_var_sig = zeros(NPipes,Nthr);
+% correlation (p < .05) under a given edge based variability threshold (columns)
+STRDATA.PropNodeStr_var_sig = zeros(1,Nthr);
 
 STRDATA.threshs = threshs; 
 
@@ -215,22 +160,13 @@ STRDATA.threshs = threshs;
 
 IgnoreEdgesWithNaN = 0;
    
-    %% Extract data and compute DATA1.QCSC
-tic
-            
-            if m == 1 || m == 2
-                movement_data = motion_data{m}(:,COMBINATIONS);
-            else
-                movement_data = motion_data{m};
-            end
-    
+tic    
     
             Nsubs = length(adjs);
-            NNodes = length(con);
                 
-             groupMask = con;
-             groupMask(groupMask<edgeconthr) = 0;
-             groupMask(groupMask~=0) = 1;
+                [~, ~,groupMask] = connectomeGroupThreshold(adjs, edgeconthr); 
+
+                NNodes = length(groupMask);
              
                         groupMaskTriu = triu(groupMask,1);
                         
@@ -285,17 +221,17 @@ tic
                             
                         end
                         
-                        DATA2.total_str_mean = mean(total_STR);
-                        DATA2.total_str_sd = std(total_STR);
+                        DATA.total_str_mean = mean(total_STR);
+                        DATA.total_str_sd = std(total_STR);
                         
-                        DATA2.density_mean = mean(den);
-                        DATA2.density_sd = std(den);
+                        DATA.density_mean = mean(den);
+                        DATA.density_sd = std(den);
                                                 
-                        DATA2.MeanEdgeWeight_mean = mean(EdgeWeight_mean);
-                        DATA2.MeanEdgeWeight_sd = std(EdgeWeight_mean);
+                        DATA.MeanEdgeWeight_mean = mean(EdgeWeight_mean);
+                        DATA.MeanEdgeWeight_sd = std(EdgeWeight_mean);
                         
-                        DATA2.SdEdgeWeight_mean = mean(EdgeWeight_sd);
-                        DATA2.SdEdgeWeight_sd = std(EdgeWeight_sd);
+                        DATA.SdEdgeWeight_mean = mean(EdgeWeight_sd);
+                        DATA.SdEdgeWeight_sd = std(EdgeWeight_sd);
                         
                         
 			if calc_node_STRs   
@@ -320,9 +256,9 @@ tic
                             STRDATA.STRvar{thr} = Str2;
                             STRDATA.DEGvar{thr} = Deg2;
                             
-                            [STRDATA.QCSTR_con{thr},STRDATA.QCSTR_pval_con{thr}] = corr(Str,movement_data,'type','Spearman');
+                            [STRDATA.QCSTR_con{thr},STRDATA.QCSTR_pval_con{thr}] = corr(Str,motion,'type','Spearman');
         
-                            [STRDATA.QCSTR_var{thr},STRDATA.QCSTR_pval_var{thr}] = corr(Str2,movement_data,'type','Spearman');
+                            [STRDATA.QCSTR_var{thr},STRDATA.QCSTR_pval_var{thr}] = corr(Str2,motion,'type','Spearman');
      
                             STRDATA.PropNodeStr_con_sig(thr) = sum(STRDATA.QCSTR_pval_con{thr} < .05)./length(STRDATA.QCSTR_pval_con{thr});
                             STRDATA.PropNodeStr_var_sig(thr) = sum(STRDATA.QCSTR_pval_var{thr} < .05)./length(STRDATA.QCSTR_pval_var{thr});
@@ -355,7 +291,7 @@ tic
                             
                             Edges2Corr = subjEdges(:,edge);
                             
-                            movement2corr = movement_data;
+                            movement2corr = motion;
                             
                             lengths2use = subjEdgesLength(:,edge);
                             
@@ -401,56 +337,29 @@ tic
                             
                         end
                         
-                        %% Store output in cells
+                        %% Store output in structures
                         
-                        DATA1.EdgeMatQCSC = Edge_Mat_Rho + Edge_Mat_Rho';
-                        DATA1.EdgeMatQCSC_PVALS = Edge_Mat_Pval + Edge_Mat_Pval';
-                        DATA2.EdgeMatConsistency = Edge_Con_Mat + Edge_Con_Mat';
-                        DATA2.EdgeMatWeightVariability = Edge_WeiVariability_Mat + Edge_WeiVariability_Mat';
-                        DATA1.mean_QCSC = nanmean(qcsc);
-                        DATA1.median_QCSC = nanmedian(qcsc);
-                        DATA1.QCSC = qcsc;
-                        DATA1.QCSC_PVALS = qcsc_pval;
-                        DATA2.EdgeConsistency = Edge_Con;
-                        DATA2.EdgeWeightVariability = Edge_Var;
-                        DATA2.EdgeLength = Edge_Length;
-                        DATA2.EdgeMatLength = Edge_Length_Mat + Edge_Length_Mat';
-                        DATA2.EdgeCovariance = Edge_Cov;
-                        DATA2.EdgeWeightVariance = Edge_Weight_variance;
-                        DATA2.EdgeMatCovariance = Edge_Cov_Mat + Edge_Cov_Mat';
-                        DATA2.EdgeMatWeightVariance = Edge_Weight_variance_mat + Edge_Weight_variance_mat;
-                        DATA2.EdgeWeight = Edge_Weight;
-                        DATA2.EdgeMatWeight = Edge_Weight_Mat + Edge_Weight_Mat';   
+                        DATA.EdgeMatQCSC = Edge_Mat_Rho + Edge_Mat_Rho';
+                        DATA.EdgeMatQCSC_PVALS = Edge_Mat_Pval + Edge_Mat_Pval';
+                        DATA.EdgeMatConsistency = Edge_Con_Mat + Edge_Con_Mat';
+                        DATA.EdgeMatWeightVariability = Edge_WeiVariability_Mat + Edge_WeiVariability_Mat';
+                        DATA.mean_QCSC = nanmean(qcsc);
+                        DATA.median_QCSC = nanmedian(qcsc);
+                        DATA.QCSC = qcsc;
+                        DATA.QCSC_PVALS = qcsc_pval;
+                        DATA.EdgeConsistency = Edge_Con;
+                        DATA.EdgeWeightVariability = Edge_Var;
+                        DATA.EdgeLength = Edge_Length;
+                        DATA.EdgeMatLength = Edge_Length_Mat + Edge_Length_Mat';
+                        DATA.EdgeCovariance = Edge_Cov;
+                        DATA.EdgeWeightVariance = Edge_Weight_variance;
+                        DATA.EdgeMatCovariance = Edge_Cov_Mat + Edge_Cov_Mat';
+                        DATA.EdgeMatWeightVariance = Edge_Weight_variance_mat + Edge_Weight_variance_mat;
+                        DATA.EdgeWeight = Edge_Weight;
+                        DATA.EdgeMatWeight = Edge_Weight_Mat + Edge_Weight_Mat';   
                         
                         timetaken = toc;
                         fprintf('Completed in %.4f seconds\n',timetaken)
             
 
-DATA1.COMBINATIONS = COMBINATIONS;
-DATA1.movement_data = motion_data{m};
-
-DATA2.COMBINATIONS = COMBINATIONS;
-
-
-DATA = MergeStructs(DATA1,DATA2);
-
-function [merged_struct] = MergeStructs(struct_a,struct_b)
-%%if one of the structres is empty do not merge
-if isempty(struct_a)
-    merged_struct=struct_b;
-    return
-end
-if isempty(struct_b)
-    merged_struct=struct_a;
-    return
-end
-%%insert struct a
-merged_struct=struct_a;
-%%insert struct b
-size_a=length(merged_struct);
-for j=1:length(struct_b)
-    f = fieldnames(struct_b);
-    for i = 1:length(f)
-        merged_struct(size_a+j).(f{i}) = struct_b(j).(f{i});
-    end
-end
+DATA.motion = motion;
