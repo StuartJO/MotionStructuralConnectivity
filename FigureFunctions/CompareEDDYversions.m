@@ -3,7 +3,7 @@ function CompareEDDYversions
 % This function compares the different version of EDDY (which we
 % imaginatively call, EDDY1, EDDY1.5, EDDY2).
 
-load('Pipelines_EDDY1.5_QCSC_thr_0.05_RMS_abs_inc0Edges_0.mat', 'COMBINATIONS','QCSC','QCSC_PVALS')
+load('Pipelines_EDDY1.5_QCSC_thr_0.05_ABSall_inc0Edges_0.mat', 'COMBINATIONS','QCSC','QCSC_PVALS')
 
 COMBINATIONS_EDDY = COMBINATIONS;
 QCSC_eddy1half = QCSC;
@@ -11,7 +11,7 @@ QCSC_PVALS_eddy1half = QCSC_PVALS;
 
 clear QCSC QCSC_PVALS
 
-load('Pipelines_QCSC_thr_0.05_RMS_abs_inc0Edges_0.mat', 'COMBINATIONS','QCSC','QCSC_PVALS')
+load('Pipelines_QCSC_thr_0.05_ABSall_inc0Edges_0.mat', 'COMBINATIONS','QCSC','QCSC_PVALS')
 
 [~,IDX] = ismember(COMBINATIONS(:,2:7),COMBINATIONS_EDDY(:,2:7),'rows');
 
@@ -24,8 +24,8 @@ EDDY_COMBINATIONS = [COMBINATIONS(INDS,:); COMBINATIONS_EDDY];
 
 % EDDY1.5 in the COMBINATIONS matrix is numbered as 3, which would result
 % in things being sorted around the wrong way in my normal approach, so I
-% temporarily make it 1.5, and then after the sorting I change it make so
-% colour maps are correctly applied
+% temporarily make it 1.5, and then after the sorting I change it back to
+% 3 so colour maps are correctly applied
 
 EDDY_COMBINATIONS2 = changem(EDDY_COMBINATIONS,1.5,3);
 
@@ -47,10 +47,9 @@ Color1 = [186,186,186]./255;
 Color2 = [64,64,64]./255;
 Color3 = [244,165,130]./255;
 
-figure('Position',[0 0 1488 555])
+figure('Position',[0 0 2158 739])
 
-subplot_tight = @(m,n,p) subtightplot(m,n,p,[0.005 0.05], [0.1 0.01], [0.1 0.01]); 
-ax1 = subplot_tight(3,8,18:24);
+ax1 = axes('Position',[0.2175    0.0744    0.7725    0.3139]);
 
 imagesc(EDDYTYPES_PIPELINE_MATRIX)
 yticks(1:length(LABELS));
@@ -75,11 +74,11 @@ ax = gca;
 
 ax.TickLength = [0 0];
 
-set(gca,'FontSize',12);
+set(gca,'FontSize',22);
 
 xticks([])
 
-ax2 = subplot_tight(3,8,[2:8 10:16]);
+ax2 = axes('Position',[0.2175    0.3983    0.7725    0.5917]);
 
 bar(TOTAL_SIG,'BarWidth', 1,'FaceColor',[243 106 103]./255,'EdgeColor','k');
 hold on
@@ -92,5 +91,5 @@ box on
 
 ylabel({'Proportion of edges with a','significant QC-SC correlation'})
 
-set(gca,'FontSize',16);
+set(gca,'FontSize',22);
 

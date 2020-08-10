@@ -19,9 +19,9 @@ for i = 1:7
         JitteredParallelScatter(DATA,1,1,0)
         xticks([])
         ylabel('mm')
-        xlabel({MotionPlotNames{i},'w/ EDDY1'})
+        xlabel([MotionPlotNames{i},' [EDDY1]'])
         
-        MotionName{subplotind} = [MotionPlotNames{i},'w/ EDDY1'];
+        MotionName{subplotind} = [MotionPlotNames{i},' [EDDY1]'];
         meanMotion(subplotind) = mean(DATA{1});    
         stdMotion(subplotind) = std(DATA{1});
         
@@ -34,9 +34,9 @@ for i = 1:7
         JitteredParallelScatter(DATA,1,1,0)        
         xticks([])
         ylabel('mm')
-        xlabel({MotionPlotNames{i},'w/ EDDY2'})
+        xlabel([MotionPlotNames{i},' [EDDY2]'])
 
-        MotionName{subplotind} = [MOTIONNAMES{i},'w/ EDDY2'];
+        MotionName{subplotind} = [MotionPlotNames{i},' [EDDY2]'];
         meanMotion(subplotind) = mean(DATA{1});    
         stdMotion(subplotind) = std(DATA{1});        
 

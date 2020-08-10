@@ -156,13 +156,22 @@ Color3 = [244,165,130]./255;
 
 LABELS = cell(7,1);
 
-LABELS{(ORDER_FLIP==1)} = [sprintf('MotionCorr:{\\color[rgb]{%f,%f,%f}EDDY1}/',Color1),sprintf('{\\color[rgb]{%f,%f,%f}EDDY1.5}/',Color3),sprintf('\\color[rgb]{%f,%f,%f}EDDY2',Color2)];
+% LABELS{(ORDER_FLIP==1)} = [sprintf('MotionCorr:{\\color[rgb]{%f,%f,%f}EDDY1}/',Color1),sprintf('{\\color[rgb]{%f,%f,%f}EDDY1.5}/',Color3),sprintf('\\color[rgb]{%f,%f,%f}EDDY2',Color2)];
+% LABELS{(ORDER_FLIP==6)} = [sprintf('EdgeWei:{\\color[rgb]{%f,%f,%f}SSW}/',Color1),sprintf('\\color[rgb]{%f,%f,%f}FA',Color2)];
+% LABELS{(ORDER_FLIP==2)} = [sprintf('TractAlgor:{\\color[rgb]{%f,%f,%f}FACT}/',Color1),sprintf('\\color[rgb]{%f,%f,%f}iFOD2',Color2)];
+% LABELS{(ORDER_FLIP==4)} = [sprintf('SeedAlgor:{\\color[rgb]{%f,%f,%f}dynamic}/',Color1),sprintf('{\\color[rgb]{%f,%f,%f}WM}/',Color2),sprintf('{\\color[rgb]{%f,%f,%f}GMWMI}',Color3)];
+% LABELS{(ORDER_FLIP==3)} = [sprintf('SptlCons:{\\color[rgb]{%f,%f,%f}ACT}/',Color1),sprintf('\\color[rgb]{%f,%f,%f}GWM',Color2)];
+% LABELS{(ORDER_FLIP==5)} = [sprintf('TractReWei:{\\color[rgb]{%f,%f,%f}None}/',Color1),sprintf('\\color[rgb]{%f,%f,%f}SIFT2',Color2)];
+% LABELS{(ORDER_FLIP==7)} = [sprintf('Parcellation:{\\color[rgb]{%f,%f,%f}82 Nodes}/',Color1),sprintf('{\\color[rgb]{%f,%f,%f}220 Nodes}/',Color2),sprintf('{\\color[rgb]{%f,%f,%f}380 Nodes}',Color3)];
+
+LABELS{(ORDER_FLIP==1)} = [sprintf('DistCorr:{\\color[rgb]{%f,%f,%f}EDDY1}/',Color1),sprintf('{\\color[rgb]{%f,%f,%f}EDDY1.5}/',Color3),sprintf('\\color[rgb]{%f,%f,%f}EDDY2',Color2)];
 LABELS{(ORDER_FLIP==6)} = [sprintf('EdgeWei:{\\color[rgb]{%f,%f,%f}SSW}/',Color1),sprintf('\\color[rgb]{%f,%f,%f}FA',Color2)];
 LABELS{(ORDER_FLIP==2)} = [sprintf('TractAlgor:{\\color[rgb]{%f,%f,%f}FACT}/',Color1),sprintf('\\color[rgb]{%f,%f,%f}iFOD2',Color2)];
-LABELS{(ORDER_FLIP==4)} = [sprintf('SeedAlgor:{\\color[rgb]{%f,%f,%f}dynamic}/',Color1),sprintf('{\\color[rgb]{%f,%f,%f}WM}/',Color2),sprintf('{\\color[rgb]{%f,%f,%f}GMWMI}',Color3)];
+LABELS{(ORDER_FLIP==4)} = [sprintf('Seed:{\\color[rgb]{%f,%f,%f}dynamic}/',Color1),sprintf('{\\color[rgb]{%f,%f,%f}WM}/',Color2),sprintf('{\\color[rgb]{%f,%f,%f}GMWMI}',Color3)];
 LABELS{(ORDER_FLIP==3)} = [sprintf('SptlCons:{\\color[rgb]{%f,%f,%f}ACT}/',Color1),sprintf('\\color[rgb]{%f,%f,%f}GWM',Color2)];
-LABELS{(ORDER_FLIP==5)} = [sprintf('TractReWei:{\\color[rgb]{%f,%f,%f}None}/',Color1),sprintf('\\color[rgb]{%f,%f,%f}SIFT2',Color2)];
-LABELS{(ORDER_FLIP==7)} = [sprintf('Parcellation:{\\color[rgb]{%f,%f,%f}82 Nodes}/',Color1),sprintf('{\\color[rgb]{%f,%f,%f}220 Nodes}/',Color2),sprintf('{\\color[rgb]{%f,%f,%f}380 Nodes}',Color3)];
+LABELS{(ORDER_FLIP==5)} = [sprintf('TractWei:{\\color[rgb]{%f,%f,%f}None}/',Color1),sprintf('\\color[rgb]{%f,%f,%f}SIFT2',Color2)];
+LABELS{(ORDER_FLIP==7)} = [sprintf('Parc:{\\color[rgb]{%f,%f,%f}82 Nodes}/',Color1),sprintf('{\\color[rgb]{%f,%f,%f}220 Nodes}/',Color2),sprintf('{\\color[rgb]{%f,%f,%f}380 Nodes}',Color3)];
+
 
 if EXCLUDE
     

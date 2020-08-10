@@ -1,4 +1,4 @@
-function [DATA,STRDATA] = CalculateQCSC(motion,edgeconthr,calc_node_STRs,include_zero_edges,save_edge_properties,save_output_location)
+function [DATA,STRDATA] = QCSC(adjs,lens,con,motion,edgeconthr,calc_node_STRs,include_zero_edges,save_edge_properties,save_output_location)
 
 % This function calculates the correlation between edge weight and some
 % measure of motion across participants.
@@ -100,9 +100,6 @@ DATA1.QCSC = cell(NPipes,1);
 
 % A cell array where each cell contains a vector of each edges QCSC correlation p value
 DATA1.QCSC_PVALS = cell(NPipes,1);
-
-% A cell array where each cell contains a vector of each edges QCSC correlation FDR corrected p value
-DATA1.QCSC_PVALS_FDR = cell(NPipes,1);
 
 % A cell array where each cell contains a vector of each edges consistency
 DATA2.EdgeConsistency = cell(NPipes,1);
@@ -217,23 +214,17 @@ STRDATA.threshs = threshs;
 % recorded. Doing so does not fundamentally change the results at all.
 
 IgnoreEdgesWithNaN = 0;
-
-for ITER = 1:size(COMBINATIONS,1)
-    
+   
     %% Extract data and compute DATA1.QCSC
 tic
-clear adjs lens con
-    %load(['Pipeline_',num2str(ITER),'.mat'],'adjs','lens','con')
-            load(['Pipeline_',num2str(ITER),'.mat'],'adjs','lens')
-             if m == 1 || m == 2
-                 movement_data = motion_data{m}(:,COMBINATIONS(ITER,1));
-             else
-                 movement_data = motion_data{m};
-             end
-            %movement_data = motion_data{m}(:,1);
-    
-            [~,~,~,con] = connectomeGroupThreshold(adjs,0);
             
+            if m == 1 || m == 2
+                movement_data = motion_data{m}(:,COMBINATIONS);
+            else
+                movement_data = motion_data{m};
+            end
+    
+    
             Nsubs = length(adjs);
             NNodes = length(con);
                 
@@ -271,7 +262,7 @@ clear adjs lens con
                             Ws(:,:,subj) = W;
                             
                             Nnodes = size(W,1);
-                            Nedges = nnz(W(~isnan(W)))/2;
+                            Nedges = nnz(W(~isnan(W)));
                             den(subj,1) = Nedges/((Nnodes^2-Nnodes)/2);
                             
                             total_STR(subj,1) = nansum(edge_weights);
@@ -279,7 +270,6 @@ clear adjs lens con
                             EdgeWeight_sd(subj,1) = nanstd(edge_weights(edge_weights>0));                          
                             
                         end
-
 
                         if IgnoreEdgesWithNaN == 1
                             NaN_edges = isnan(sum(subjEdges));
@@ -295,17 +285,17 @@ clear adjs lens con
                             
                         end
                         
-                        DATA2.total_str_mean(ITER,1) = mean(total_STR);
-                        DATA2.total_str_sd(ITER,1) = std(total_STR);
+                        DATA2.total_str_mean = mean(total_STR);
+                        DATA2.total_str_sd = std(total_STR);
                         
-                        DATA2.density_mean(ITER,1) = mean(den);
-                        DATA2.density_sd(ITER,1) = std(den);
+                        DATA2.density_mean = mean(den);
+                        DATA2.density_sd = std(den);
                                                 
-                        DATA2.MeanEdgeWeight_mean(ITER,1) = mean(EdgeWeight_mean);
-                        DATA2.MeanEdgeWeight_sd(ITER,1) = std(EdgeWeight_mean);
+                        DATA2.MeanEdgeWeight_mean = mean(EdgeWeight_mean);
+                        DATA2.MeanEdgeWeight_sd = std(EdgeWeight_mean);
                         
-                        DATA2.SdEdgeWeight_mean(ITER,1) = mean(EdgeWeight_sd);
-                        DATA2.SdEdgeWeight_sd(ITER,1) = std(EdgeWeight_sd);
+                        DATA2.SdEdgeWeight_mean = mean(EdgeWeight_sd);
+                        DATA2.SdEdgeWeight_sd = std(EdgeWeight_sd);
                         
                         
 			if calc_node_STRs   
@@ -325,17 +315,17 @@ clear adjs lens con
                             Str2(subj,:) = nansum(adjs{subj}.*AdjMaskVar);
                             Deg2(subj,:) = nansum(double((adjs{subj}.*AdjMaskVar) > 0));
                             end
-                            STRDATA.STRcon{ITER,thr} = Str;
-                            STRDATA.DEGcon{ITER,thr} = Deg;
-                            STRDATA.STRvar{ITER,thr} = Str2;
-                            STRDATA.DEGvar{ITER,thr} = Deg2;
+                            STRDATA.STRcon{thr} = Str;
+                            STRDATA.DEGcon{thr} = Deg;
+                            STRDATA.STRvar{thr} = Str2;
+                            STRDATA.DEGvar{thr} = Deg2;
                             
-                            [STRDATA.QCSTR_con{ITER,thr},STRDATA.QCSTR_pval_con{ITER,thr}] = corr(Str,movement_data,'type','Spearman');
+                            [STRDATA.QCSTR_con{thr},STRDATA.QCSTR_pval_con{thr}] = corr(Str,movement_data,'type','Spearman');
         
-                            [STRDATA.QCSTR_var{ITER,thr},STRDATA.QCSTR_pval_var{ITER,thr}] = corr(Str2,movement_data,'type','Spearman');
+                            [STRDATA.QCSTR_var{thr},STRDATA.QCSTR_pval_var{thr}] = corr(Str2,movement_data,'type','Spearman');
      
-                            STRDATA.PropNodeStr_con_sig(ITER,thr) = sum(STRDATA.QCSTR_pval_con{ITER,thr} < .05)./length(STRDATA.QCSTR_pval_con{ITER,thr});
-                            STRDATA.PropNodeStr_var_sig(ITER,thr) = sum(STRDATA.QCSTR_pval_var{ITER,thr} < .05)./length(STRDATA.QCSTR_pval_var{ITER,thr});
+                            STRDATA.PropNodeStr_con_sig(thr) = sum(STRDATA.QCSTR_pval_con{thr} < .05)./length(STRDATA.QCSTR_pval_con{thr});
+                            STRDATA.PropNodeStr_var_sig(thr) = sum(STRDATA.QCSTR_pval_var{thr} < .05)./length(STRDATA.QCSTR_pval_var{thr});
                             STRDATA.threshs = threshs; 
      
                         end
@@ -392,9 +382,6 @@ clear adjs lens con
                             Edge_Var(edge) = std(Edges2Corr) / mean(Edges2Corr);
                             
                             [qcsc(edge),qcsc_pval(edge)] = corr(movement2corr,Edges2Corr,'Type','Spearman');
-                            
-                            %
-                            
                             Edge_Mat_Rho(indEdge(edge)) = qcsc(edge);
                             Edge_Mat_Pval(indEdge(edge)) = qcsc_pval(edge);
                             Edge_Con_Mat(indEdge(edge)) = Edge_Con(edge);
@@ -416,60 +403,34 @@ clear adjs lens con
                         
                         %% Store output in cells
                         
-                        DATA1.EdgeMatQCSC{ITER} = Edge_Mat_Rho + Edge_Mat_Rho';
-                        DATA1.EdgeMatQCSC_PVALS{ITER} = Edge_Mat_Pval + Edge_Mat_Pval';
-                        DATA2.EdgeMatConsistency{ITER} = Edge_Con_Mat + Edge_Con_Mat';
-                        DATA2.EdgeMatWeightVariability{ITER} = Edge_WeiVariability_Mat + Edge_WeiVariability_Mat';
-                        DATA1.mean_QCSC(ITER,1) = nanmean(qcsc);
-                        DATA1.median_QCSC(ITER,1) = nanmedian(qcsc);
-                        DATA1.QCSC{ITER} = qcsc;
-                        DATA1.QCSC_PVALS{ITER} = qcsc_pval;
-                        DATA2.EdgeConsistency{ITER} = Edge_Con;
-                        DATA2.EdgeWeightVariability{ITER} = Edge_Var;
-                        DATA2.EdgeLength{ITER} = Edge_Length;
-                        DATA2.EdgeMatLength{ITER} = Edge_Length_Mat + Edge_Length_Mat';
-                        DATA2.EdgeCovariance{ITER} = Edge_Cov;
-                        DATA2.EdgeWeightVariance{ITER} = Edge_Weight_variance;
-                        DATA2.EdgeMatCovariance{ITER} = Edge_Cov_Mat + Edge_Cov_Mat';
-                        DATA2.EdgeMatWeightVariance{ITER} = Edge_Weight_variance_mat + Edge_Weight_variance_mat;
-                        DATA2.EdgeWeight{ITER} = Edge_Weight;
-                        DATA2.EdgeMatWeight{ITER} = Edge_Weight_Mat + Edge_Weight_Mat';   
-                        
-                        [~,~,DATA1.QCSC_PVALS_FDR{ITER}] = BF_FDR(qcsc_pval,.05,1);
-                        
+                        DATA1.EdgeMatQCSC = Edge_Mat_Rho + Edge_Mat_Rho';
+                        DATA1.EdgeMatQCSC_PVALS = Edge_Mat_Pval + Edge_Mat_Pval';
+                        DATA2.EdgeMatConsistency = Edge_Con_Mat + Edge_Con_Mat';
+                        DATA2.EdgeMatWeightVariability = Edge_WeiVariability_Mat + Edge_WeiVariability_Mat';
+                        DATA1.mean_QCSC = nanmean(qcsc);
+                        DATA1.median_QCSC = nanmedian(qcsc);
+                        DATA1.QCSC = qcsc;
+                        DATA1.QCSC_PVALS = qcsc_pval;
+                        DATA2.EdgeConsistency = Edge_Con;
+                        DATA2.EdgeWeightVariability = Edge_Var;
+                        DATA2.EdgeLength = Edge_Length;
+                        DATA2.EdgeMatLength = Edge_Length_Mat + Edge_Length_Mat';
+                        DATA2.EdgeCovariance = Edge_Cov;
+                        DATA2.EdgeWeightVariance = Edge_Weight_variance;
+                        DATA2.EdgeMatCovariance = Edge_Cov_Mat + Edge_Cov_Mat';
+                        DATA2.EdgeMatWeightVariance = Edge_Weight_variance_mat + Edge_Weight_variance_mat;
+                        DATA2.EdgeWeight = Edge_Weight;
+                        DATA2.EdgeMatWeight = Edge_Weight_Mat + Edge_Weight_Mat';   
                         
                         timetaken = toc;
-                        fprintf('Completed %d/240 in %.4f seconds\n',ITER,timetaken)
+                        fprintf('Completed in %.4f seconds\n',timetaken)
             
-end
 
 DATA1.COMBINATIONS = COMBINATIONS;
 DATA1.movement_data = motion_data{m};
 
 DATA2.COMBINATIONS = COMBINATIONS;
 
-if calc_node_STRs && ~isempty(save_output_location)
-          
-   save([save_output_location,'/Node_degree_strength_thr_',num2str(edgeconthr),'_inc0Edges_',num2str(include_zero_edges),'.mat'],'-struct','STRDATA','-v7.3')
-
-end
-
-if save_edge_properties && ~isempty(save_output_location)
-    
-    savename = [save_output_location,'/Pipelines_EdgeProperties_thr_',num2str(edgeconthr),'_inc0Edges_',num2str(include_zero_edges),'.mat'];
-    disp(['Saved as ',savename])
-    save(savename,'-v7.3','-struct','DATA2')
-
-end
-
-
-if ~isempty(save_output_location)
-    
-    savename = [save_output_location,'/Pipelines_QCSC_thr_',num2str(edgeconthr),'_',MOTIONNAMES{m},'_inc0Edges_',num2str(include_zero_edges),'.mat'];
-    disp(['Saved as ',savename])
-    save(savename,'-v7.3','-struct','DATA1')
-
-end
 
 DATA = MergeStructs(DATA1,DATA2);
 

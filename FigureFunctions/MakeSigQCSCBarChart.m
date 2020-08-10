@@ -1,4 +1,4 @@
-function MakeSigQCSCBarChart(QCSC_DATA,QCSC_PVALS,PROCESSING_MATRIX,PROCESSING_MATRIX_LABELS)
+function [prop_sig,ax1,ax2,ax3] = MakeSigQCSCBarChart(QCSC_DATA,QCSC_PVALS,PROCESSING_MATRIX,PROCESSING_MATRIX_LABELS)
 
 % This function makes a bar chart showing the proportion of edges in each
 % pipeline that had a significant QC-SC correlation, and the proportion of
@@ -25,12 +25,30 @@ for i = 1:length(QCSC_PVALS)
     prop_sig_neg(i) = NEGSIG/length(QCSC_PVALS{i});
 end
 
+%figure('Position',[0 0 2560 1440]);
+%figure('Position',[0 0 2560 1052]);
+
 figure('Position',[0 0 2560 1440]);
 
+PanelAPos = [0.146  0.6185  0.8476  0.3650];
+PanelBPos = [0.146  0.2495  0.8476  0.3650];
+PanelCPos = [0.146  0.0808  0.8476  0.1647];
 
-subplot_tight = @(m,n,p) subtightplot(m,n,p,[0.005 0.05], [0.1 0.01], [0.1 0.01]); 
+% PanelAPos = [0.15  0.6185  0.8476  0.3650];
+% PanelBPos = [0.15  0.2495  0.8476  0.3650];
+% PanelCPos = [0.15  0.0808  0.8476  0.1647];
 
-subplot_tight(88,1,39:65)
+LblYOffset = .0075;
+
+FONTSIZE = 22;
+
+ALblPos = [0, (PanelAPos(2)+PanelAPos(4)-LblYOffset), 0.0160, 0.0280];
+BLblPos = [0, (PanelBPos(2)+PanelBPos(4)-LblYOffset), 0.0160, 0.0280];
+CLblPos = [0, (PanelCPos(2)+PanelCPos(4)-LblYOffset), 0.0160, 0.0280];
+
+%ax2 = axes('Position',[0.1424  0.3339  0.8476  0.2696]);
+ax2 = axes('Position',PanelBPos);
+
 extraParams.customSpot = '';
 extraParams.add0Line = true;
 
@@ -55,9 +73,11 @@ box on
 ytickangle(90)
 xticks([]);
 ylabel({'QC-SC correlation'})
-set(gca,'FontSize',16);
+set(gca,'FontSize',FONTSIZE);
 
-subplot_tight(88,1,12:38)
+%ax1 = subplot_tight(88,1,12:38);
+%ax1 = axes('Position',[0.1424  0.6085  0.8476  0.2696]);
+ax1 = axes('Position',PanelAPos);
 
 PosBar = bar(0,'FaceColor',[243 106 103]./255,'EdgeColor','k');
 hold on
@@ -76,14 +96,17 @@ bar(prop_sig_neg,'BarWidth', 1,'FaceColor',[119 158 203]./255,'EdgeColor','k');
 xticks([]);
 xlim([0.5 n-.5]);
 ytickangle(90)
-ylim([0 .85])
+%ylim([0 .85])
+ylim([0 max(prop_sig)+.1])
 box on
 
 ylabel({'Proportion of edges with a','significant QC-SC correlation'})
 
-set(gca,'FontSize',16);
+set(gca,'FontSize',FONTSIZE);
 
-ax1 = subplot_tight(88,1,66:77);
+%ax3 = subplot_tight(88,1,66:77);
+%ax3 = axes('Position',[0.1424  0.2119  0.8476  0.1170]);
+ax3 = axes('Position',PanelCPos);
 
 Color1 = [186,186,186]./255;
 Color2 = [64,64,64]./255;
@@ -108,18 +131,18 @@ end
 
 xlabel('Pipeline')
 
-colormap(ax1,[Color1; Color2; Color3])
+colormap(ax3,[Color1; Color2; Color3])
 
 ax = gca;
 
 ax.TickLength = [0 0];
 
-set(gca,'FontSize',12);
+set(gca,'FontSize',FONTSIZE);
 
-Alabel = annotation('textbox',[0, 0.8637, 0.0160, 0.0280],'String','A','EdgeColor','none','FontSize',32);
+Alabel = annotation('textbox',ALblPos,'String','A','EdgeColor','none','FontSize',32);
 
-Blabel = annotation('textbox',[0, 0.5881, 0.0160, 0.0280],'String','B','EdgeColor','none','FontSize',32);
+Blabel = annotation('textbox',BLblPos,'String','B','EdgeColor','none','FontSize',32);
 
-Clabel = annotation('textbox',[0, 0.3125, 0.0160, 0.0280],'String','C','EdgeColor','none','FontSize',32);
+Clabel = annotation('textbox',CLblPos,'String','C','EdgeColor','none','FontSize',32);
 
 end

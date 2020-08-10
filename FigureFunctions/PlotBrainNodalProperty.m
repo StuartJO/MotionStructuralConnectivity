@@ -1,4 +1,4 @@
-function PlotBrainNodalProperty(data,plotName,plotLabel,ColorLim,Colormap,PlotColorBar,ColorbarLim,ignore0)
+function T = PlotBrainNodalProperty(data,plotName,plotLabel,ColorLim,Colormap,PlotColorBar,ColorbarLim,ignore0)
 
 % This function projects some data onto the cortical surface of fsaverage
 %
@@ -165,7 +165,7 @@ colormap(cmap)
 % Add either a name to the enter of the plots or a colorbar
 
 if PlotColorBar == 0
-    annotation('textbox',[0.3543    0.5228    0.4392    0.0337],'String',plotName,'EdgeColor','none','FontSize',48);
+    T = annotation('textbox',[0.2638    0.4479    0.4957    0.1340],'String',plotName,'EdgeColor','none','FontSize',30,'HorizontalAlignment','center');
 elseif PlotColorBar == 1
     c = colorbar('Location','north');
 c.Position = [0.2818    0.4621    0.4392    0.0337];

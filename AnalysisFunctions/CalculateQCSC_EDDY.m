@@ -93,7 +93,7 @@ clear adjs con
                                                         
                             Ws(:,:,subj) = W;
                             Nnodes = size(W,1);
-                            Nedges = nnz(W(~isnan(W)));
+                            Nedges = nnz(W(~isnan(W)))/2;
                             den(subj,1) = Nedges/((Nnodes^2-Nnodes)/2);
                             
                             total_strength(subj,1) = nansum(edge_weights);
@@ -213,7 +213,7 @@ DATA.movement_data = motion_data_abs;
 
 if ~isempty(save_output_location)
     
-    savename = [save_output_location,'/Pipelines_EDDY1.5_QCSC_thr_',num2str(threshold),'_RMS_abs_inc0Edges_',num2str(include_zero_edges),'.mat'];
+    savename = [save_output_location,'/Pipelines_EDDY1.5_QCSC_thr_',num2str(threshold),'_ABSall_inc0Edges_',num2str(include_zero_edges),'.mat'];
     disp(['Saved as ',savename])
     save(savename,'-v7.3','-struct','DATA')
 

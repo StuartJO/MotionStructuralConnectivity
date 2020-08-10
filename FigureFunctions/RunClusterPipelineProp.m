@@ -28,22 +28,42 @@ n = size(Properties,2)+1;
 CSTR = corr(Properties,'Type','Spearman');
 [IDX,~,~,tree] = BF_ClusterReorder(CSTR);
 
+% dendrogram_pos = [.1    0.15    0.085    0.8];
+% 
+% matrix_pos = [0.2019    0.15    0.6981    0.8];
+% 
+% cmap_pos = [0.9073    0.15    0.0171    0.8];
+% 
+% ypos = .05;
+% legendplot = [0.2019    ypos    0.6981    0.15-ypos];
+
+XPOS = .1319;
+
+XPOS_OFFSET = .03;
+
+XLENGTH = 0.7981;
+
+YLENGTH = .825;
+
+dendrogram_pos = [XPOS_OFFSET    0.15    0.085    YLENGTH];
+
+matrix_pos = [XPOS    0.15    XLENGTH    YLENGTH];
+
+cmap_pos = [XPOS+XLENGTH+.01    0.15    0.0171    YLENGTH];
+
+ypos = .05;
+legendplot = [XPOS    ypos    XLENGTH    0.15-ypos];
+
 Clusters = cluster(tree,'maxclust',Ncluster);
 cutoff = median([tree(end-(Ncluster-2),3) tree(end-(Ncluster-1),3)]);
 
 if makePlot
-figure('Position',[-1765 -277 1492 1328]);
-subplot_tight = @(m,n,p) subtightplot(m,n,p,[0 0.015], [0.1 0.1], [0.1 0.1]); 
+figure('Position',[0 0 2407 1887]);
 
-subplot_inds1 = [];
-subplot_inds2 = [];
-for i = 1:76
-subplot_inds1 = [subplot_inds1 ((i-1)*8)+(2:8)];
-subplot_inds2 = [subplot_inds2 (i*8) - 7];
-end
 
-ax_matrix = subplot_tight(88,8,subplot_inds1);
-
+%ax_matrix = subplot_tight(88,8,subplot_inds1);
+ax_matrix = axes('Position',matrix_pos);
+%ax_matrix.Position = [0.2019    0.15    0.6981    0.85];
 imagesc(CSTR(IDX,IDX))
 
 minCorr = min(CSTR(:));
@@ -53,32 +73,34 @@ if minCorr < 0 && maxCorr > 0
 
 caxis([-1 1])
 
-cmap = [make_cmap('steelblue',50,30,0);flipud(make_cmap('orangered',50,30,0))];
+cmap = [make_cmap('steelblue',250,30,0);flipud(make_cmap('orangered',250,30,0))];
 
 elseif minCorr >= 0 && maxCorr >= 0
     
     caxis([0 1])
-    cmap = flipud(make_cmap('orangered',50,30,0));
+    cmap = flipud(make_cmap('orangered',250,30,0));
     
 elseif minCorr <= 0 && maxCorr <= 0
       caxis([-1 0])
-    cmap = make_cmap('steelblue',50,30,0);  
+    cmap = make_cmap('steelblue',250,30,0);  
 end
 
 colormap(cmap)
 
 c = colorbar;
-c.Position = [0.9073    0.2101    0.0171    0.6890];
+c.Position = cmap_pos;
 c.Label.String = 'Correlation between node strength';
-c.FontSize = 16;
+c.FontSize = 20;
 yticks(1:80)
 yticklabels(IDX)
 xticks([])
 %yticks([])
-
+set(gca,'FontSize',18);
 ax_matrix.TickLength = [0 0];
 
-ax_dendrogram = subplot_tight(88,8,subplot_inds2);
+%ax_dendrogram = subplot_tight(88,8,subplot_inds2);
+ax_dendrogram = axes('Position',dendrogram_pos);
+
 [H,~,outperm] = dendrogram(tree,0,'Orientation','left','ColorThreshold',cutoff,'Reorder',fliplr(IDX));
 set(H,'LineWidth',2)
 xticks([])
@@ -151,24 +173,20 @@ for i = 1:Ncluster
     % Plot a black rectangle first to add some contrast
     
     rectangle(ax_matrix,'Position',[clust_start_xy-offset1 clust_start_xy-offset1 clust_size-offset2 clust_size-offset2],'EdgeColor','k',...
-            'LineWidth',4);
+            'LineWidth',6);
         
     % Plot the coloured rectangle corresponding to the colour of that
     % cluster
     
     rectangle(ax_matrix,'Position',[clust_start_xy-offset1 clust_start_xy-offset1 clust_size-offset2 clust_size-offset2],'EdgeColor',ClusterColour(i,:),...
-            'LineWidth',2.5);
+            'LineWidth',3.75);
     
 end
 
 
-subplot_inds = [];
-subplot_inds2 = [];
-for i = 77:88
-subplot_inds = [subplot_inds (i*8)+(2:8)];
-end
+%ax1 = subplot_tight(88,8,subplot_inds);
 
-ax1 = subplot_tight(88,8,subplot_inds);
+ax1 = axes('Position',legendplot);
 
 Color1 = [186,186,186]./255;
 Color2 = [64,64,64]./255;
@@ -202,7 +220,7 @@ ax = gca;
 
 ax.TickLength = [0 0];
 
-set(gca,'FontSize',12);
+set(gca,'FontSize',18);
 
 
 end

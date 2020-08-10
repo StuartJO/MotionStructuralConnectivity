@@ -1,148 +1,173 @@
+%% Figure generation script for
+
+% Note that all the figures are generated at a specifc size. I generated
+% these on a windows PC at 4K screen resolution with scaling set to 100% in
+% windows settings. If the scaling is set differently that will effect how
+% the images look (MATLAB seems to determine screen resolution based on the
+% scaling of the default resolution). So if aiming to reproduce these plots
+% or adapt yourself, keep that in mind
+
+
 % Note this assumes you are in the location where this script is located
 PATH = pwd;
 
-addpath(genpath(PATH))
+%addpath(genpath(PATH))
 
 % Set to 1 to save the figures as they are made
 saveFigs = 1;
 
-%% Load in the data
+% Load in the data
 load('./analysed_data/Pipelines_EdgeProperties_thr_0.05_inc0Edges_0.mat')
 load('./analysed_data/Pipelines_QCSC_thr_0.05_ABSall_inc0Edges_0.mat')
 load('./analysed_data/Node_degree_strength_thr_0.05_inc0Edges_0.mat')
 
-%% Get the ordering of the data
-% Pull out only the pipelines that used a specific parcellation
-INDS220 = [0 0 0 0 0 0 2];
-INDS82 = [0 0 0 0 0 0 1];
-INDS380 = [0 0 0 0 0 0 3];
+load('COMBINATIONS_MATRIX.mat')
 
-% Pull out the pipelines in an assigned order, namely by parcellation, EDDY type, Edge weight, 
-% tractography algorithm, spatial constraint, seeding algorithm and tract reweighting (in that order)
+% Get the ordering of the data
+[ORDERED_INDS_220,ORDERED_MATRIX_220,LABELS_220] = FindPipelineCombinations([0 0 0 0 0 0 2],[7 1 6 2 4 3 5],1);
+[ORDERED_INDS_82,ORDERED_MATRIX_82,LABELS_82] = FindPipelineCombinations([0 0 0 0 0 0 1],[7 1 6 2 4 3 5],1);
+[ORDERED_INDS_380,ORDERED_MATRIX_380,LABELS_380] = FindPipelineCombinations([0 0 0 0 0 0 3],[7 1 6 2 4 3 5],1);
 
-PIPE_ORDERING = [7 1 6 2 4 3 5];
-
-[ORDERED_INDS_220,ORDERED_MATRIX_220,LABELS_220] = FindPipelineCombinations(INDS220,PIPE_ORDERING,1);
-[ORDERED_INDS_82,ORDERED_MATRIX_82,LABELS_82] = FindPipelineCombinations(INDS82,PIPE_ORDERING,1);
-[ORDERED_INDS_380,ORDERED_MATRIX_380,LABELS_380] = FindPipelineCombinations(INDS380,PIPE_ORDERING,1);
-
-%% Figure 2
-
-% Note MakePipelineNetworkPropertiesPlot(2) calculates properties for pipeline using the 220 node
-% parcellation
-
+% Figure 2
 MakePipelineNetworkPropertiesPlot(2)
 
 if saveFigs == 1
-    print('Fig2.tif','-dtiff','-r300')
-    print('smallFig2.png','-dpng')
+    print('FigS2.tif','-dtiff','-r300')
+    %print('smallFig2.png','-dpng')
 end
 
-%% Figure S2
+% Figure S2
 MakePipelineNetworkPropertiesPlot(1)
 
 if saveFigs == 1
-    print('FigS2.tif','-dtiff','-r300')
+    print('FigS1.tif','-dtiff','-r300')
 end
 
-%% Figure S3
+% Figure S3
 MakePipelineNetworkPropertiesPlot(3)
 
 if saveFigs == 1
     print('FigS3.tif','-dtiff','-r300')
 end
 
-%% Figure 3
-% From the QCSC variable, only the values associated with the 220 nodes pipeline are extracted
+% Figure 2
 
-MakeSigQCSCBarChart(QCSC(ORDERED_INDS_220),QCSC_PVALS(ORDERED_INDS_220),ORDERED_MATRIX_220,LABELS_220)
+N220_nsig = MakeSigQCSCBarChart(QCSC(ORDERED_INDS_220),QCSC_PVALS(ORDERED_INDS_220),ORDERED_MATRIX_220,LABELS_220);
+
+if saveFigs == 1
+    print('Fig2.tif','-dtiff','-r300')
+    print('smallFig2.tif','-dtiff')
+end
+
+N220_nsig_fdr = MakeSigQCSCBarChart(QCSC(ORDERED_INDS_220),QCSC_PVALS_FDR(ORDERED_INDS_220),ORDERED_MATRIX_220,LABELS_220);
+
+if saveFigs == 1
+    print('FigS5.tif','-dtiff','-r300')
+    print('smallFigS5.tif','-dtiff')
+end
+
+% Figure S4
+
+N82_nsig = MakeSigQCSCBarChart(QCSC(ORDERED_INDS_82),QCSC_PVALS(ORDERED_INDS_82),ORDERED_MATRIX_82,LABELS_82);
+
+if saveFigs == 1
+    print('FigS6.tif','-dtiff','-r300')
+end
+
+% Figure S5
+
+N380_nsig = MakeSigQCSCBarChart(QCSC(ORDERED_INDS_380),QCSC_PVALS(ORDERED_INDS_380),ORDERED_MATRIX_380,LABELS_380);
+
+if saveFigs == 1
+    print('FigS7.tif','-dtiff','-r300')
+end
+
+
+% Figure 3
+Inds2Use = [11 34 46 66];
+
+Pipelines2Use = ORDERED_INDS_220(Inds2Use);
+
+for i = 1:4
+    IDX = sub2ind(size(PROCESSING_STEPS_MATRIX),1:7,COMBINATIONS(Pipelines2Use(i),:));
+
+S = strjoin(PROCESSING_STEPS_MATRIX(IDX([6 2])),'+');
+PipelineLabels{i} = [S,' (pipeline ',num2str(Inds2Use(i)),')'];
+
+end
+
+QCSCvsEdgeConLenVar(QCSC(Pipelines2Use),EdgeLength(Pipelines2Use),EdgeConsistency(Pipelines2Use),EdgeWeightVariability(Pipelines2Use),PipelineLabels)
 
 if saveFigs == 1
     print('Fig3.tif','-dtiff','-r300')
     print('smallFig3.tif','-dtiff')
 end
 
-%% Figure S4
+% Figure S15
 
-MakeSigQCSCBarChart(QCSC(ORDERED_INDS_82),QCSC_PVALS(ORDERED_INDS_82),ORDERED_MATRIX_82,LABELS_82)
-
-if saveFigs == 1
-    print('FigS4.tif','-dtiff','-r300')
-end
-
-%% Figure S5
-
-MakeSigQCSCBarChart(QCSC(ORDERED_INDS_380),QCSC_PVALS(ORDERED_INDS_380),ORDERED_MATRIX_380,LABELS_380)
+QCSCvsEdgeConLenWei(QCSC(Pipelines2Use),EdgeLength(Pipelines2Use),EdgeConsistency(Pipelines2Use),EdgeWeight(Pipelines2Use),PipelineLabels)
 
 if saveFigs == 1
-    print('FigS5.tif','-dtiff','-r300')
+    print('FigS19.tif','-dtiff','-r300')
 end
 
+% Figure S7
 
-%% Figure 4 & Figure S15
+QCSCperThreshold(QCSC_PVALS(ORDERED_INDS_220),EdgeConsistency(ORDERED_INDS_220),EdgeWeightVariability(ORDERED_INDS_220),ORDERED_MATRIX_220,LABELS_220)
 
-% These pipelines were selected as they are the most prototypical
-PROTO_PIPES = [11 14 34 46 80];
+if saveFigs == 1
+    print('FigS10.tif','-dtiff','-r300')
+end
 
-QCSCvsEdgeConLenVar(QCSC(ORDERED_INDS_220),EdgeLength(ORDERED_INDS_220),EdgeConsistency(ORDERED_INDS_220),EdgeWeightVariability(ORDERED_INDS_220),PROTO_PIPES)
+% Figure 4
+
+QCStrengthperThreshold(PropNodeStr_con_sig(ORDERED_INDS_220,:),PropNodeStr_var_sig(ORDERED_INDS_220,:),ORDERED_MATRIX_220,LABELS_220)
 
 if saveFigs == 1
     print('Fig4.tif','-dtiff','-r300')
     print('smallFig4.tif','-dtiff')
 end
 
-QCSCvsEdgeConLenWei(QCSC(ORDERED_INDS_220),EdgeLength(ORDERED_INDS_220),EdgeConsistency(ORDERED_INDS_220),EdgeWeight(ORDERED_INDS_220),PROTO_PIPES)
-
-if saveFigs == 1
-    print('FigS15.tif','-dtiff','-r300')
-end
-
-%% Figure S7
-
-QCSCperThreshold(QCSC_PVALS(ORDERED_INDS_220),EdgeConsistency(ORDERED_INDS_220),EdgeWeightVariability(ORDERED_INDS_220),ORDERED_MATRIX_220,LABELS_220)
-
-if saveFigs == 1
-    print('FigS7.tif','-dtiff','-r300')
-end
-
-%% Figure 5
-
-QCStrengthperThreshold(PropNodeStr_con_sig(ORDERED_INDS_220,:),PropNodeStr_var_sig(ORDERED_INDS_220,:),ORDERED_MATRIX_220,LABELS_220)
-
-if saveFigs == 1
-    print('Fig5.tif','-dtiff','-r300')
-    print('smallFig5.tif','-dtiff')
-end
-
-%% Figure 6 subplots. 
-% These were subsequently combined in PowerPoint to make
+% Figure 6 subplots. These were subsequently combined in PowerPoint to make
 % the image seen in the paper (I couldn't get the figures to be
 % appriopriately sized through MATLAB)
 
 inds2use = [11 14 40 51 54 80];
+
+Pipelines2Use = ORDERED_INDS_220(inds2use);
+
 PlotLabelLetters = {'A','B','C','D','E','F'};
 climits = [-1 1];
 PlotColorBar = 0;
 Ignore0vals = 1;
 
-for i = 1:6
+for i = 1:length(inds2use)
 
-    C = QCSTR_con{ORDERED_INDS_220(inds2use(i)),7};
-    P = QCSTR_pval_con{ORDERED_INDS_220(inds2use(i)),7};
+    C = QCSTR_con{Pipelines2Use(i),7};
+    P = QCSTR_pval_con{Pipelines2Use(i),7};
     
-    plotName = ['Pipeline ',num2str(inds2use(i))];
+    
+    IDX = sub2ind(size(PROCESSING_STEPS_MATRIX),1:7,COMBINATIONS(Pipelines2Use(i),:));
 
-    strsigcvals = C.*(P<.05);
+    %plotName = ['Pipeline ',num2str(inds2use(i))];
+    
+    S = strjoin(PROCESSING_STEPS_MATRIX(IDX([1 6 2 4 3 5])),', ');
+    
+    
+    %plotName = {['Pipeline ',num2str(inds2use(i)),':',S{1},',',S{6},',',S{2}],[',',S{4},',',S{3},',',S{5}]};
+plotName = ['Pipeline ',num2str(inds2use(i)),': ',S];
 
-    PlotBrainNodalProperty(strsigcvals,plotName,PlotLabelLetters{i},climits,1,PlotColorBar,[],Ignore0vals)
+strsigcvals = C.*(P<.05);
 
-    if saveFigs == 1
-        print(['Fig6_',PlotLabelLetters{i},'.tif'],'-dtiff','-r300')
-    end
+T = PlotBrainNodalProperty(strsigcvals,plotName,PlotLabelLetters{i},climits,1,PlotColorBar,[],Ignore0vals);
+
+if saveFigs == 1
+    print(['Fig5_',PlotLabelLetters{i},'.tif'],'-dtiff','-r300')
+end
 
 end
 
-%% Figure 7
+% Figure 6: clustering
 
 mean_strength_rank = zeros(220,80);
 
@@ -153,56 +178,66 @@ for i = 1:length(ORDERED_INDS_220)
 
 end
 
-% CTSR is the correlation matrix (it is not ordered by optimal clusters)
-% clust is the cluster assignment of the input pipelines
-
-% Visually from the matrix for this example it looks like four is a good fit.
-clusters2extract = 4;
-makePlot = 1;
-
-[CTSR,clust] = RunClusterPipelineProp(mean_strength_rank,clusters2extract,makePlot,ORDERED_MATRIX_220,LABELS_220);
+[CSTR,clust] = RunClusterPipelineProp(mean_strength_rank,6,1,ORDERED_MATRIX_220,LABELS_220);
 
 if saveFigs == 1
-    print('Fig7.tif','-dtiff','-r300')
-    print('smallFig7.png','-dpng')
+    print('Fig6.tif','-dtiff','-r300')
+    print('smallFig6.png','-dpng')
 end
 
-[CorrVec,CorrIND] = triu2vec(CTSR,1);
+for i = 1:max(clust)
+    INDS = clust==i;
+    clust_qcstr = triu2vec(CSTR(INDS,INDS),1);
+    clust_min(i) = min(clust_qcstr);
+    clust_max(i) = max(clust_qcstr);
+    Csize(i) = sum(INDS);
+    clust_pipes{i} = find(clust==i);
+end
+
+% Find the pipelines with the worst strength correlation
+
+[CorrVec,CorrIND] = triu2vec(CSTR,1);
 
 [minCorr,minCorrIND] = min(CorrVec);
 
-[Pipe1,Pipe2] = ind2sub(size(CTSR),CorrIND(minCorrIND));
+[Pipe1,Pipe2] = ind2sub(size(CSTR),CorrIND(minCorrIND));
 
-%% Figure 8
-
-color_range = [0 220];
-ColorMap2Use = 3;
-PlotColorBar = 0;
-Color0s = 0;
-
-% Panel A
+% Figure 8, panel A
 
 data = mean_strength_rank(:,Pipe1);
 
-PlotBrainNodalProperty(data,['Pipeline ',num2str(Pipe1)],'A',color_range,ColorMap2Use,PlotColorBar,color_range,Color0s)
+    IDX = sub2ind(size(PROCESSING_STEPS_MATRIX),1:7,COMBINATIONS(ORDERED_INDS_220(Pipe1),:));
+
+    %plotName = ['Pipeline ',num2str(inds2use(i))];
+    
+    S = strjoin(PROCESSING_STEPS_MATRIX(IDX([1 6 2 4 3 5])),', ');
+    
+    
+    %plotName = {['Pipeline ',num2str(inds2use(i)),':',S{1},',',S{6},',',S{2}],[',',S{4},',',S{3},',',S{5}]};
+plotName = ['Pipeline ',num2str(Pipe1),': ',S];
+
+PlotBrainNodalProperty(data,plotName,'A',[0 220],3,0,[0 220],0)
 
 if saveFigs == 1
-    print('Fig8_A.tif','-dtiff','-r300')
+    print('Fig7_A.tif','-dtiff','-r300')
 end
 
-% Panel B
+% Figure 8, panel B
 
 data = mean_strength_rank(:,Pipe2);
 
-PlotBrainNodalProperty(data,['Pipeline ',num2str(Pipe2)],'B',color_range,ColorMap2Use,PlotColorBar,color_range,Color0s)
+IDX = sub2ind(size(PROCESSING_STEPS_MATRIX),1:7,COMBINATIONS(ORDERED_INDS_220(Pipe2),:));
+
+    %plotName = ['Pipeline ',num2str(inds2use(i))];
+    
+    S = strjoin(PROCESSING_STEPS_MATRIX(IDX([1 6 2 4 3 5])),', ');
+    plotName = ['Pipeline ',num2str(Pipe2),': ',S];
+
+PlotBrainNodalProperty(data,plotName,'B',[0 220],3,0,[0 220],0)
 
 if saveFigs == 1
-    print('Fig8_B.tif','-dtiff','-r300')
+    print('Fig7_B.tif','-dtiff','-r300')
 end
-
-%% Figure S17
-
-% First pull out how many nodes have a significant QCStrength correlation
 
 strdatasigcvals = zeros(220,80);
 
@@ -214,63 +249,128 @@ end
 
 NodePropSig = mean(strdatasigcvals > 0,2);
 
-% Now plot those values
+% Figure S21
 
-color_range = [0 1];
-ColorMap2Use = 2;
-PlotColorBar = 1;
-Color0s = 0;
-
-PlotBrainNodalProperty(NodePropSig,'Proportion significant','',color_range,ColorMap2Use,PlotColorBar,color_range,Color0s)
+PlotBrainNodalProperty(NodePropSig,'Proportion significant','',[0 1],2,1,[0 1])
 
 if saveFigs == 1
-    print('FigS17.tif','-dtiff','-r300')
+    print('FigS21.tif','-dtiff','-r300')
 end
 
-%% Figure S1
+% Figure S1
 
 PlotMotionProperties
 
 if saveFigs == 1
-    print('FigS1.tif','-dtiff','-r300')
+    print('FigS4.tif','-dtiff','-r300')
 end
 
 
-%% Figure S6
+% Figure S8
 
 CompareEDDYversions
 
 if saveFigs == 1
-    print('FigS6.tif','-dtiff','-r300')
+    print('FigS8.tif','-dtiff','-r300')
 end
 
 
-%% Figures S9 to S14
+% Figures S11 to S18
 
 load('MOTION_DATA.mat', 'MOTIONNAMES')
-for i = 2:length(MOTIONNAMES)
-    load(['./analysed_data/Pipelines_QCSC_thr_0.05_',MOTIONNAMES{i},'_inc0Edges_0.mat'])
-    MakeSigQCSCBarChart(QCSC(ORDERED_INDS_220),QCSC_PVALS(ORDERED_INDS_220),ORDERED_MATRIX_220,LABELS_220)
+for i = 2:9
+    load(['Pipelines_QCSC_thr_0.05_',MOTIONNAMES{i},'_inc0Edges_0.mat'])
+    MakeSigQCSCBarChart(QCSC(ORDERED_INDS_220),QCSC_PVALS(ORDERED_INDS_220),ORDERED_MATRIX_220,LABELS_220);
     if saveFigs == 1
-        print(['FigS',num2str(i+7),'.tif'],'-dtiff','-r300')
+        print(['FigS',num2str(i+9),'.tif'],'-dtiff','-r300')
     end
 
 end
 
-%% Figure S16
+
+% Figure S20
 
 load('./analysed_data/Pipelines_EdgeProperties_thr_0_inc0Edges_1.mat')
 load('./analysed_data/Pipelines_QCSC_thr_0_ABSall_inc0Edges_1.mat')
 
-QCSCvsEdgeConLenVar(QCSC(ORDERED_INDS_220),EdgeLength(ORDERED_INDS_220),EdgeConsistency(ORDERED_INDS_220),EdgeWeightVariability(ORDERED_INDS_220),[11 14 34 46 80])
+Inds2Use = [11 34 46 66];
 
-if saveFigs == 1
-    print('FigS16.tif','-dtiff','-r300')
+Pipelines2Use = ORDERED_INDS_220(Inds2Use);
+
+for i = 1:4
+    IDX = sub2ind(size(PROCESSING_STEPS_MATRIX),1:7,COMBINATIONS(Pipelines2Use(i),:));
+
+S = strjoin(PROCESSING_STEPS_MATRIX(IDX([6 2])),'+');
+PipelineLabels{i} = [S,' (pipeline ',num2str(Inds2Use(i)),')'];
+
 end
 
-%% Figure S8
+QCSCvsEdgeConLenVar(QCSC(Pipelines2Use),EdgeLength(Pipelines2Use),EdgeConsistency(Pipelines2Use),EdgeWeightVariability(Pipelines2Use),PipelineLabels);
 
-    MakeSigQCSCBarChart(QCSC(ORDERED_INDS_220),QCSC_PVALS(ORDERED_INDS_220),ORDERED_MATRIX_220,LABELS_220)
-    if saveFigs == 1
-        print('FigS8.tif','-dtiff','-r300')
-    end
+if saveFigs == 1
+    print('FigS20.tif','-dtiff','-r300')
+end
+
+% Figure S9
+
+MakeSigQCSCBarChart(QCSC(ORDERED_INDS_220),QCSC_PVALS(ORDERED_INDS_220),ORDERED_MATRIX_220,LABELS_220);
+
+if saveFigs == 1
+    print('FigS9.tif','-dtiff','-r300')
+end
+
+   
+ % For some figures I combined the images seperately in another program
+ % (PowerPoint of all things!!) and the following just makes some large
+ % colourbars I could use because otherwise I would have either colourbars
+ % for every plot which is just silly or b) a comically small colourbar for
+ % one plot.
+    
+figure('Position',[1 41 500 1323])
+c = colorbar('Position',[0.5    0.1109    0.1    0.8135]);
+axis off
+c.Label.String = 'QC-Strength correlation';
+c.FontSize = 28;
+c.Label.FontSize = 34;
+caxis([-1 1])
+set(c, 'xlim', [-1 1])
+cmap = [make_cmap('steelblue',250,30,0);flipud(make_cmap('orangered',250,30,0))];
+colormap(cmap)
+c.LineWidth = 2;
+print('CorrColorBarVert.tif','-dtiff','-r300')
+
+figure('Position',[1 41 500 1323])
+c = colorbar('Position',[0.5    0.1109    0.1    0.8135]);
+axis off
+c.Label.String = 'Node strength rank';
+c.FontSize = 28;
+c.Label.FontSize = 34;
+caxis([0 220])
+set(c, 'xlim', [0 220])
+cmap = viridisplus(500);
+colormap(cmap)
+c.LineWidth = 2;
+print('StrColorBarVert.tif','-dtiff','-r300')
+
+
+load('MOTION_DATA.mat','motion_data','MOTIONNAMES')
+
+
+for i = 3:11; motionM_SD(i-2,1) = mean(motion_data{i}); motionM_SD(i-2,2) = std(motion_data{i}); end
+
+
+[FACT_PIPELINES,~,~] = FindPipelineCombinations([0 1 0 0 0 0 0],[7 1 6 2 4 3 5],1);
+
+[iFOD2_PIPELINES,~,~] = FindPipelineCombinations([0 2 0 0 0 0 0],[7 1 6 2 4 3 5],1);
+
+FACT_den_mean = mean(density_mean(FACT_PIPELINES));
+
+iFOD2_den_mean = mean(density_mean(iFOD2_PIPELINES));
+
+
+for i = 1:length(ORDERED_INDS_220)
+    Cmean_STR220N(i) = nanmean(QCSTR_con{ORDERED_INDS_220(i),7});
+    
+    Cmax_STR220N(i) = max(QCSTR_con{ORDERED_INDS_220(i),7});
+    Cmin_STR220N(i) = min(QCSTR_con{ORDERED_INDS_220(i),7});
+end

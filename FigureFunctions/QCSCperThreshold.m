@@ -45,11 +45,29 @@ Y = Y';
 
 %scatter(X(:),prop_sig_thr(:),50,Y(:),'filled')
 
-figure('units','pixels','outerposition',[0 0 2560 1440])
+%figure('units','pixels','outerposition',[0 0 2560 1440])
+
+% figure('Position',[0 0 2560 1052]);
+% 
+% PanelAPos = [0.15  0.6185  0.8476  0.3650];
+% PanelBPos = [0.15  0.2495  0.8476  0.3650];
+% PanelCPos = [0.15  0.0808  0.8476  0.1647];
+figure('Position',[0 0 2560 1440]);
+
+PanelAPos = [0.146  0.6185  0.8476  0.3650];
+PanelBPos = [0.146  0.2495  0.8476  0.3650];
+PanelCPos = [0.146  0.0808  0.8476  0.1647];
 
 
-subplot_tight = @(m,n,p) subtightplot(m,n,p,[0.005 0.05], [0.1 0.01], [0.1 0.01]); 
-subplot_tight(88,1,12:38)
+LblYOffset = .0075;
+
+FONTSIZE = 22;
+
+ALblPos = [0, (PanelAPos(2)+PanelAPos(4)-LblYOffset), 0.0160, 0.0280];
+BLblPos = [0, (PanelBPos(2)+PanelBPos(4)-LblYOffset), 0.0160, 0.0280];
+CLblPos = [0, (PanelCPos(2)+PanelCPos(4)-LblYOffset), 0.0160, 0.0280];
+
+ax1 = axes('Position',PanelAPos);
 
 for i = 1:length(thresh)
 idx = find(Y==i);
@@ -57,7 +75,8 @@ scatter(X(idx),prop_sig_thr(idx),50,Y(idx),'filled');
 hold on
 end
 colormap(flipud(make_cmap('red',10)))
-ylim([0 1.1])
+ylim([0 1.2])
+yticks(0:.2:1)
 box on
 lgd1 = legend({'= 5%','= 10%','= 20%','= 30%','= 40%','= 50%','= 60%','= 70%','= 80%','= 90%'},'Orientation','horizontal');
 title(lgd1,'Edge consistency-based threshold: Percentage')
@@ -65,16 +84,17 @@ xlim([0.5 80.5])
 ytickangle(90)
 xticks([]);
 ylabel({'Proportion of edges with a','significant QC-SC correlation'})
-set(gca,'FontSize',16);
+set(gca,'FontSize',FONTSIZE);
 
-subplot_tight(88,1,39:65)
+ax2 = axes('Position',PanelBPos);
 for i = length(threshvar):-1:1
 idx = find(Y==i);
 scatter(X(idx),prop_sig_thr2(idx),50,11-Y(idx),'filled');
 hold on
 end
 colormap(flipud(make_cmap('red',10)))
-ylim([0 1.1])
+ylim([0 1.2])
+yticks(0:.2:1)
 box on
 lgd2 = legend(fliplr({'= 10','= 20','= 30','= 40','= 50','= 60','= 70','= 80','= 90','= 100'}),'Orientation','horizontal');
 title(lgd2,'Edge variability-based threshold: Percentile')
@@ -82,14 +102,14 @@ xticks([]);
 xlim([0.5 80.5]);
 ytickangle(90)
 
-ylabel({'Proportion of edges with a','significant QC-SC correlation'})
+ylabel({'Proportion of edges','with a significant','QC-SC correlation'})
 
-set(gca,'FontSize',16);
-
-
+set(gca,'FontSize',FONTSIZE);
 
 
-ax1 = subplot_tight(88,1,66:77);
+
+
+ax3 = axes('Position',PanelCPos);
 
 Color1 = [186,186,186]./255;
 Color2 = [64,64,64]./255;
@@ -114,16 +134,16 @@ end
 
 xlabel('Pipeline')
 
-colormap(ax1,[Color1; Color2; Color3])
+colormap(ax3,[Color1; Color2; Color3])
 
 ax = gca;
 
 ax.TickLength = [0 0];
 
-set(gca,'FontSize',12);
+set(gca,'FontSize',FONTSIZE);
 
-Alabel = annotation('textbox',[0, 0.8637, 0.0160, 0.0280],'String','A','EdgeColor','none','FontSize',32);
+Alabel = annotation('textbox',ALblPos,'String','A','EdgeColor','none','FontSize',32);
 
-Blabel = annotation('textbox',[0, 0.5881, 0.0160, 0.0280],'String','B','EdgeColor','none','FontSize',32);
+Blabel = annotation('textbox',BLblPos,'String','B','EdgeColor','none','FontSize',32);
 
-Clabel = annotation('textbox',[0, 0.3125, 0.0160, 0.0280],'String','C','EdgeColor','none','FontSize',32);
+Clabel = annotation('textbox',CLblPos,'String','C','EdgeColor','none','FontSize',32);

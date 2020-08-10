@@ -17,7 +17,7 @@ function [ORDERED_INDS,ORDERED_MATRIX,LABELS] = FindPipelineCombinations(TYPE,OR
 % indicates by which processing step to order pipelines by, the second 
 % value indicates which processing step to further order pipelines after
 % the first ordering, the third indicates which to use for ordering after
-% the second etc etc. 
+% the second etc etc.
 % EXCLUDE = a binary value of 1 or 0. If set to 1, any processing step for 
 % which only a single value is being extracted will be removed from 
 % ORDERED_MATRIX and LABELS
@@ -35,10 +35,10 @@ function [ORDERED_INDS,ORDERED_MATRIX,LABELS] = FindPipelineCombinations(TYPE,OR
 % yticklabels(LABELS) it will format it as per the paper
 %
 % HOW TO USE:
-% TYPE = [MotionCorr TractAlgor SptlCons SeedAlgor TractReWei EdgeWei Parcellation]
+% TYPE = [DistCorr TractAlgor SptlCons Seeding TractWei EdgeWei Parc]
 %
-% MotionCorr = 1, EDDY1 
-% MotionCorr = 2, EDDY2 
+% DistCorr = 1, EDDY1 
+% DistCorr = 2, EDDY2 
 %
 % TractAlgor = 1, FACT 
 % TractAlgor = 2, iFOD2 
@@ -46,19 +46,19 @@ function [ORDERED_INDS,ORDERED_MATRIX,LABELS] = FindPipelineCombinations(TYPE,OR
 % SptlCons = 1, ACT 
 % SptlCons = 2, GWM 
 %
-% SeedAlgor = 1, dynamic 
-% SeedAlgor = 2, WM 
-% SeedAlgor = 3, GMWMI 
+% Seeding = 1, dyn 
+% Seeding = 2, WM 
+% Seeding = 3, GMWMI 
 %
-% Filtering = 1, None
-% Filtering = 2, SIFT2 
+% TractWei = 1, None
+% TractWei = 2, SIFT2 
 %
 % EdgeWei = 1, SSW
 % EdgeWei = 2, FA 
 %
-% Parcellation = 1, 82 Node 
-% Parcellation = 2, 220 Node 
-% Parcellation = 3, 380 Node 
+% Parc = 1, 82 Node 
+% Parc = 2, 220 Node 
+% Parc = 3, 380 Node 
 %
 % So TYPE = [1 1 2 3 1 1 3] would extract the index of the pipeline that 
 % used EDDY1, FACT, ACT, GMWMI seeding, no filtering, SSW edge weighting
@@ -69,8 +69,8 @@ function [ORDERED_INDS,ORDERED_MATRIX,LABELS] = FindPipelineCombinations(TYPE,OR
 % pipelines using EDDY1 and the 220 node parcellation etc.
 %
 % ORDER = [7 1 6 2 4 3 5] extracts indices in the order of first being
-% sorted by 'Parcellation', then 'MotionCorr', then 'EdgeWei', then
-% 'TractAlgor', then 'SptlCons', then 'SeedAlgor', and then by 'TractReWei'.  
+% sorted by 'Parcellation', then 'DistCorr', then 'EdgeWei', then
+% 'TractAlgor', then 'SptlCons', then 'Seeding', and then by 'TractWei'.  
 % In other words, pipelines are primarily ordered by the type of
 % parcellation they used, then within that ordering they are order by the
 % type of motion corretion used etc etc
@@ -80,7 +80,7 @@ function [ORDERED_INDS,ORDERED_MATRIX,LABELS] = FindPipelineCombinations(TYPE,OR
 % 'EdgeWei', ORDERED_MATRIX(2,:) and LABELS{2} will correspond to the
 % values of 'SptlCons' etc etc. If EXCLUDED = 1, then ORDERED_MATRIX(1,:),  
 % LABELS{1} will correspond to the values of 'EdgeWei', ORDERED_MATRIX(2,:),
-% LABELS{2} will correspond to the values of 'SeedAlgor' etc etc
+% LABELS{2} will correspond to the values of 'Seeding' etc etc
 
 if nargin < 2
     % Default ordering
@@ -157,13 +157,13 @@ Color3 = [244,165,130]./255;
 
 LABELS = cell(7,1);
 
-LABELS{(ORDER_FLIP==1)} = [sprintf('MotionCorr:{\\color[rgb]{%f,%f,%f}EDDY1}/',Color1),sprintf('\\color[rgb]{%f,%f,%f}EDDY2',Color2)];
+LABELS{(ORDER_FLIP==1)} = [sprintf('DistCorr:{\\color[rgb]{%f,%f,%f}EDDY1}/',Color1),sprintf('\\color[rgb]{%f,%f,%f}EDDY2',Color2)];
 LABELS{(ORDER_FLIP==6)} = [sprintf('EdgeWei:{\\color[rgb]{%f,%f,%f}SSW}/',Color1),sprintf('\\color[rgb]{%f,%f,%f}FA',Color2)];
 LABELS{(ORDER_FLIP==2)} = [sprintf('TractAlgor:{\\color[rgb]{%f,%f,%f}FACT}/',Color1),sprintf('\\color[rgb]{%f,%f,%f}iFOD2',Color2)];
-LABELS{(ORDER_FLIP==4)} = [sprintf('SeedAlgor:{\\color[rgb]{%f,%f,%f}dynamic}/',Color1),sprintf('{\\color[rgb]{%f,%f,%f}WM}/',Color2),sprintf('{\\color[rgb]{%f,%f,%f}GMWMI}',Color3)];
+LABELS{(ORDER_FLIP==4)} = [sprintf('Seed:{\\color[rgb]{%f,%f,%f}dynamic}/',Color1),sprintf('{\\color[rgb]{%f,%f,%f}WM}/',Color2),sprintf('{\\color[rgb]{%f,%f,%f}GMWMI}',Color3)];
 LABELS{(ORDER_FLIP==3)} = [sprintf('SptlCons:{\\color[rgb]{%f,%f,%f}ACT}/',Color1),sprintf('\\color[rgb]{%f,%f,%f}GWM',Color2)];
-LABELS{(ORDER_FLIP==5)} = [sprintf('TractReWei:{\\color[rgb]{%f,%f,%f}None}/',Color1),sprintf('\\color[rgb]{%f,%f,%f}SIFT2',Color2)];
-LABELS{(ORDER_FLIP==7)} = [sprintf('Parcellation:{\\color[rgb]{%f,%f,%f}82 Nodes}/',Color1),sprintf('{\\color[rgb]{%f,%f,%f}220 Nodes}/',Color2),sprintf('{\\color[rgb]{%f,%f,%f}380 Nodes}',Color3)];
+LABELS{(ORDER_FLIP==5)} = [sprintf('TractWei:{\\color[rgb]{%f,%f,%f}None}/',Color1),sprintf('\\color[rgb]{%f,%f,%f}SIFT2',Color2)];
+LABELS{(ORDER_FLIP==7)} = [sprintf('Parc:{\\color[rgb]{%f,%f,%f}82 Nodes}/',Color1),sprintf('{\\color[rgb]{%f,%f,%f}220 Nodes}/',Color2),sprintf('{\\color[rgb]{%f,%f,%f}380 Nodes}',Color3)];
 
 if EXCLUDE
     

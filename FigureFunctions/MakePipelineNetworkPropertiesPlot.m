@@ -7,15 +7,26 @@ function MakePipelineNetworkPropertiesPlot(PARCELLATION)
 % PARCELLATION = set to 1, 2 or 3 for the 82 node, 220 node, or 380 node
 % parcellation respectively
 
-load('./analysed_data/Pipelines_EdgeProperties_thr_0.05_inc0Edges_0.mat')
+load('Pipelines_EdgeProperties_thr_0.05_inc0Edges_0.mat')
 
 [ORDERED_INDS,PROCESSING_MATRIX,PROCESSING_MATRIX_LABELS] = FindPipelineCombinations([0 0 0 0 0 0 PARCELLATION],[7 1 6 2 4 3 5],1);
 
 figure('Position',[0 0 2560 1440]);
 
-subplot_tight = @(m,n,p) subtightplot(m,n,p,[0.005 0.05], [0.1 0.01], [0.1 0.1]); 
+PanelAPos = [0.146  0.6185  0.817  0.3650];
+PanelBPos = [0.146  0.2495  0.817  0.3650];
+PanelCPos = [0.146  0.0808  0.817  0.1647];
 
-subplot_tight(88,1,39:65);
+LblYOffset = .0075;
+
+FONTSIZE = 22;
+
+ALblPos = [0, (PanelAPos(2)+PanelAPos(4)-LblYOffset), 0.0160, 0.0280];
+BLblPos = [0, (PanelBPos(2)+PanelBPos(4)-LblYOffset), 0.0160, 0.0280];
+CLblPos = [0, (PanelCPos(2)+PanelCPos(4)-LblYOffset), 0.0160, 0.0280];
+
+%ax2 = axes('Position',[0.1424  0.3339  0.8200  0.2696]);
+ax2 = axes('Position',PanelBPos);
 
 ax = gca;
 
@@ -45,7 +56,7 @@ box on
 ytickangle(90)
 xticks([]);
 ylabel({'Mean NOS edge weight'})
-set(gca,'FontSize',16);
+set(gca,'FontSize',FONTSIZE);
 
 yyaxis right
 
@@ -57,7 +68,7 @@ box on
 ytickangle(90)
 xticks([]);
 ylabel({'Mean FA edge weight'})
-set(gca,'FontSize',16);
+set(gca,'FontSize',FONTSIZE);
 
 
 den_vals = density_mean(ORDERED_INDS);
@@ -66,8 +77,9 @@ if max(den_vals) > 1
     den_vals = den_vals ./length(triu2vec(EdgeMatWeight{ORDERED_INDS(1)},1));
 end
 
+%ax1 = axes('Position',[0.1424  0.6085  0.8200  0.2696]);
+ax1 = axes('Position',PanelAPos);
 
-subplot_tight(88,1,12:38)
 bar(den_vals,'BarWidth', 1,'FaceColor',[243 106 103]./255,'EdgeColor','k');
 xticks([]);
 xlim([0.5 80.5]);
@@ -78,9 +90,11 @@ box on
 
 ylabel({'Mean network density'})
 
-set(gca,'FontSize',16);
+set(gca,'FontSize',FONTSIZE);
 
-ax1 = subplot_tight(88,1,66:77);
+%ax3 = axes('Position',[0.1424  0.2119  0.8200  0.1170]);
+
+ax3 = axes('Position',PanelCPos);
 
 Color1 = [186,186,186]./255;
 Color2 = [64,64,64]./255;
@@ -106,16 +120,16 @@ end
 
 xlabel('Pipeline')
 
-colormap(ax1,[Color1; Color2; Color3])
+colormap(ax3,[Color1; Color2; Color3])
 
 ax = gca;
 
 ax.TickLength = [0 0];
 
-set(gca,'FontSize',12);
+set(gca,'FontSize',FONTSIZE);
 
-Alabel = annotation('textbox',[0, 0.8637, 0.0160, 0.0280],'String','A','EdgeColor','none','FontSize',32);
+Alabel = annotation('textbox',ALblPos,'String','A','EdgeColor','none','FontSize',32);
 
-Blabel = annotation('textbox',[0, 0.5881, 0.0160, 0.0280],'String','B','EdgeColor','none','FontSize',32);
+Blabel = annotation('textbox',BLblPos,'String','B','EdgeColor','none','FontSize',32);
 
-Clabel = annotation('textbox',[0, 0.3125, 0.0160, 0.0280],'String','C','EdgeColor','none','FontSize',32);
+Clabel = annotation('textbox',CLblPos,'String','C','EdgeColor','none','FontSize',32);
